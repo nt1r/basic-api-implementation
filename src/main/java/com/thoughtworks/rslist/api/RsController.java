@@ -48,4 +48,9 @@ public class RsController {
         originRsEvent.setEventName(updateRsEvent.getEventName());
         originRsEvent.setKeyword(updateRsEvent.getKeyword());
     }
+
+    @DeleteMapping("/rs")
+    public void deleteOneRsEvent(@RequestParam int index) {
+        rsList.remove(index);
+    }
 }
