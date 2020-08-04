@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.pgleqi.RsEvent;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +13,14 @@ public class RsController {
     ObjectMapper objectMapper;
     private List<RsEvent> rsList;
 
-    public RsController() {
+    public RsController() throws JsonProcessingException {
         rsList = new ArrayList<>();
         rsList.add(new RsEvent("第一条事件", "分类一"));
         rsList.add(new RsEvent("第二条事件", "分类二"));
         rsList.add(new RsEvent("第三条事件", "分类三"));
 
         objectMapper = new ObjectMapper();
+        // System.out.println(objectMapper.writeValueAsString(rsList.get(0)));
     }
 
     @GetMapping("/rs/{index}")
@@ -33,7 +35,7 @@ public class RsController {
     }
 
     @PostMapping("/rs")
-    public void postOneRsEvent() {
-
+    public void postOneRsEvent(@RequestBody RsEvent rsEvent) {
+        rsList.add(rsEvent);
     }
 }

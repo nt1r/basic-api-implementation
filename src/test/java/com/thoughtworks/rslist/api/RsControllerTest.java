@@ -9,8 +9,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @SpringBootTest
@@ -80,14 +80,16 @@ class RsControllerTest {
 
     @Test
     public void should_add_one_rs_event_by_json() throws Exception {
-        /*mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
+        mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content())
-                .andExpect(content().string("[第一条事件, 第二条事件]"))
+                .characterEncoding("UTF-8")
+                .content("{\"eventName\":\"第四条事件\",\"keyword\":\"分类四\"}"))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_URL, 3)).accept(MediaType.TEXT_PLAIN))
-                .andExpect(content().string("第四条事件"))
-                .andExpect(status().isOk());*/
+        mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_URL, 3)).accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(jsonPath("$.eventName", is("第四条事件")))
+                .andExpect(jsonPath("$.keyword", is("分类四")))
+                .andExpect(status().isOk());
     }
 }
