@@ -1,6 +1,9 @@
 package com.thoughtworks.rslist.api;
 
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,20 +13,24 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 class RsControllerTest {
     final String GET_ONE_RS_EVENT_URL = "/rs/%d";
     final String GET_MULTIPLE_RS_EVENT_URL = "/rs/list?start=%d&end=%d";
     final String POST_ONE_RS_EVENT_URL = "/rs";
+    final String PUT_ONE_RS_EVENT_URL = "/rs?index=%d";
 
     @Autowired
     MockMvc mockMvc;
 
     @Test
+    @Order(1)
     public void should_get_one_rs_event_by_index() throws Exception {
         mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_URL, 0)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
@@ -43,6 +50,7 @@ class RsControllerTest {
     }
 
     @Test
+    @Order(2)
     public void should_get_multiple_rs_event_by_indexes() throws Exception {
         mockMvc.perform(get(String.format(GET_MULTIPLE_RS_EVENT_URL, 0, 1)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
@@ -79,6 +87,7 @@ class RsControllerTest {
     }
 
     @Test
+    @Order(3)
     public void should_add_one_rs_event_by_json() throws Exception {
         mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -90,6 +99,22 @@ class RsControllerTest {
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$.eventName", is("第四条事件")))
                 .andExpect(jsonPath("$.keyword", is("分类四")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(4)
+    public void should_update_third_rs_event() throws Exception {
+        mockMvc.perform(put(String.format(PUT_ONE_RS_EVENT_URL, 2))
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .content("{\"eventName\":\"事件已更改\",\"keyword\":\"分类已更改\"}"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_URL, 2)).accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(jsonPath("$.eventName", is("事件已更改")))
+                .andExpect(jsonPath("$.keyword", is("分类已更改")))
                 .andExpect(status().isOk());
     }
 }

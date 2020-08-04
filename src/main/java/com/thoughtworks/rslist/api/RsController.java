@@ -38,4 +38,14 @@ public class RsController {
     public void postOneRsEvent(@RequestBody RsEvent rsEvent) {
         rsList.add(rsEvent);
     }
+
+    @PutMapping("/rs")
+    public void putOneRsEvent(@RequestParam int index, @RequestBody RsEvent updateRsEvent) {
+        assignRsEventFromUpdatedOne(rsList.get(index), updateRsEvent);
+    }
+
+    private void assignRsEventFromUpdatedOne(RsEvent originRsEvent, RsEvent updateRsEvent) {
+        originRsEvent.setEventName(updateRsEvent.getEventName());
+        originRsEvent.setKeyword(updateRsEvent.getKeyword());
+    }
 }
