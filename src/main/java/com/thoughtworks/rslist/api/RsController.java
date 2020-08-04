@@ -1,7 +1,5 @@
 package com.thoughtworks.rslist.api;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.pgleqi.RsEvent;
@@ -31,8 +29,11 @@ public class RsController {
     }
 
     @GetMapping("/rs/list")
-    public List<RsEvent> getRsEventListBetweenIndexes(@RequestParam(defaultValue = "0") int start,
-                                                      @RequestParam(defaultValue = "2") int end) {
+    public List<RsEvent> getRsEventListBetweenIndexes(@RequestParam(required = false) Integer start,
+                                                      @RequestParam(required = false) Integer end) {
+        if (start == null && end == null) {
+            return rsList;
+        }
         return rsList.subList(start, end + 1);
     }
 
@@ -54,5 +55,6 @@ public class RsController {
     @DeleteMapping("/rs")
     public void deleteOneRsEvent(@RequestParam int index) {
         rsList.remove(index);
+        System.out.println(rsList.size());
     }
 }
