@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class RsControllerTestIndependent {
+class RsControllerTestDirtiesContext {
     final String GET_ONE_RS_EVENT_URL = "/rs/%d";
     final String GET_MULTIPLE_RS_EVENT_URL = "/rs/list?start=%d&end=%d";
     final String POST_ONE_RS_EVENT_URL = "/rs";
@@ -37,6 +37,7 @@ class RsControllerTestIndependent {
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyword", is("分类三")))
                 .andExpect(status().isOk());
+        System.out.println(mockMvc);
     }
 
     @Test
@@ -56,6 +57,7 @@ class RsControllerTestIndependent {
                 .andExpect(jsonPath("$.eventName", is("第三条事件")))
                 .andExpect(jsonPath("$.keyword", is("分类三")))
                 .andExpect(status().isOk());
+        System.out.println(mockMvc);
     }
 
     @Test
@@ -92,6 +94,7 @@ class RsControllerTestIndependent {
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyword", is("分类三")))
                 .andExpect(status().isOk());
+        System.out.println(mockMvc);
     }
 
     @Test
@@ -122,6 +125,7 @@ class RsControllerTestIndependent {
                 .andExpect(jsonPath("$.eventName", is("事件已更改")))
                 .andExpect(jsonPath("$.keyword", is("分类已更改")))
                 .andExpect(status().isOk());
+        System.out.println(mockMvc);
     }
 
     @Test
@@ -136,5 +140,6 @@ class RsControllerTestIndependent {
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类二")))
                 .andExpect(status().isOk());
+        System.out.println(mockMvc);
     }
 }

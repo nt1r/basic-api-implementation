@@ -55,6 +55,6 @@ public class RsController {
     @DeleteMapping("/rs")
     public void deleteOneRsEvent(@RequestParam int index) {
         rsList.remove(index);
-        System.out.println(rsList.size());
+        // System.out.println(rsList.size());
     }
 }
