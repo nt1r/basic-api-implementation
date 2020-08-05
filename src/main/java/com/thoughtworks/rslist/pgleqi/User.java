@@ -12,9 +12,10 @@ public class User {
     @Size(max = 8)
     private String userName;
 
+    @NotNull
     @Min(18)
     @Max(100)
-    private int age;
+    private Integer age;
 
     @NotNull
     @Pattern(regexp = "male|female|lesbian|gay|Bisexual|Transgender")
@@ -27,7 +28,7 @@ public class User {
     private String phone;
 
     public User(@NotNull @Size(max = 8) String userName,
-                @Min(18) @Max(100) int age,
+                @NotNull @Min(18) @Max(100) int age,
                 @NotNull @Pattern(regexp = "male|female|lesbian|gay|Bisexual|Transgender") String gender,
                 @Email String email,
                 @Pattern(regexp = "1\\d{10}") String phone)
@@ -51,5 +52,9 @@ public class User {
         }
         User user = (User) obj;
         return user.userName.equals(this.userName);
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 }

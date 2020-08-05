@@ -30,6 +30,9 @@ class UserControllerTest {
     final User userNameTooLong = new User("DwightClaudette", 25, "male", "michaelleqihust@gmail.com", "18706789189");
     final User userNameNull = new User(null, 25, "male", "michaelleqihust@gmail.com", "18706789189");
     final User userGenderNull = new User("Dwight", 25, null, "michaelleqihust@gmail.com", "18706789189");
+    final User userOver100Ages = new User("Dwight", 250, "male", "michaelleqihust@gmail.com", "18706789189");
+    final User userBelow18Ages = new User("Dwight", 15, "male", "michaelleqihust@gmail.com", "18706789189");
+    final User userAgeNull = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
 
     @BeforeEach
     void setUp() {
@@ -91,6 +94,34 @@ class UserControllerTest {
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userGenderNull)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_create_user_with_over_100_age() throws Exception {
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userOver100Ages)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_create_user_with_below_18_age() throws Exception {
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userBelow18Ages)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_create_user_with_age_null() throws Exception {
+        userAgeNull.setAge(null);
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userAgeNull)))
                 .andExpect(status().isBadRequest());
     }
 }
