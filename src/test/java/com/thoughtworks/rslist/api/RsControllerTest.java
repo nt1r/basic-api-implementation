@@ -248,4 +248,24 @@ class RsControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid request param")));
     }
+
+    @Test
+    public void should_return_bad_request_when_rs_event_param_invalid() throws Exception {
+        mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .content("{\"eventName\":null,\"keyword\":\"分类四\",\"user\":{\"user_name\":\"Dwight\",\"user_age\":25,\"user_gender\":\"male\",\"user_email\":\"michaelleqihust@gmail.com\",\"user_phone\":\"18706789189\"}}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid param")));
+    }
+
+    @Test
+    public void should_return_bad_request_when_user_param_invalid() throws Exception {
+        mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .content("{\"eventName\":\"第四条事件\",\"keyword\":\"分类四\",\"user\":{\"user_name\":\"Dwight\",\"user_age\":200,\"user_gender\":\"male\",\"user_email\":\"michaelleqihust@gmail.com\",\"user_phone\":\"18706789189\"}}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid param")));
+    }
 }
