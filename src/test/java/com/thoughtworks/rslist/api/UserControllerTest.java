@@ -47,6 +47,7 @@ class UserControllerTest {
     final User userPhoneNumberNotContain11Numbers = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "187067891");
     final User userPhoneNumberNull = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", null);
     final User userClaudette = new User("Claudette", 23, "female", "michaelleqisnnu@gmail.com", "18888888888");
+    final User userWithGenderCat = new User("Dwight", 25, "cat", "michaelleqihust@gmail.com", "18706789189");
 
     @BeforeEach
     void setUp() {
@@ -204,7 +205,13 @@ class UserControllerTest {
         mockMvc.perform(post(ADD_USER_URL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(userOver100Ages)))
+                .content(objectMapper.writeValueAsBytes(userDwight)))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userWithGenderCat)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
     }

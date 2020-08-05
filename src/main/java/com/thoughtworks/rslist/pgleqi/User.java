@@ -24,7 +24,7 @@ public class User {
     private Integer age;
 
     @NotNull
-    @Pattern(regexp = "male|female|lesbian|gay|Bisexual|Transgender")
+    @Pattern(regexp = "male|female|lesbian|gay|bisexual|transgender")
     @JsonProperty("user_gender")
     @JsonAlias("gender")
     private String gender;
