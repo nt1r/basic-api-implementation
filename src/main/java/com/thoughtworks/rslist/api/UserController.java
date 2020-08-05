@@ -1,12 +1,11 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.component.CommonException;
 import com.thoughtworks.rslist.pgleqi.User;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
@@ -23,7 +22,7 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<User> createOneUser(@RequestBody @Valid User user) {
+    public ResponseEntity createOneUser(@RequestBody @Valid User user) {
         if (userList.contains(user)) {
             return generateResponseEntity(user, userList.indexOf(user), HttpStatus.ALREADY_REPORTED);
         }
@@ -40,5 +39,14 @@ public class UserController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("index", String.valueOf(index));
         return new ResponseEntity<>(user, httpHeaders, statusCode);
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    public ResponseEntity<CommonException> handleCommonExceptions(Exception exception) {
+        if (exception instanceof MethodArgumentNotValidException) {
+            return ResponseEntity.badRequest().body(new CommonException("invalid user"));
+        } else {
+            throw new RuntimeException("Unknown");
+        }
     }
 }

@@ -10,6 +10,8 @@ import com.thoughtworks.rslist.pgleqi.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -92,5 +94,14 @@ public class RsController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("index", String.valueOf(index));
         return new ResponseEntity<>(rsEvent, httpHeaders, statusCode);
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    public ResponseEntity<CommonException> handleCommonExceptions(Exception exception) {
+        if (exception instanceof MethodArgumentNotValidException) {
+            return ResponseEntity.badRequest().body(new CommonException("invalid param"));
+        } else {
+            throw new RuntimeException("Unknown");
+        }
     }
 }

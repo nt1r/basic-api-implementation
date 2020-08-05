@@ -8,13 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    final String METHOD_ARGUMENT_NOT_VALID_MESSAGE = "invalid param";
-
-    @ExceptionHandler({IndexOutOfBoundsException.class, ListRangeIndexException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler({IndexOutOfBoundsException.class, ListRangeIndexException.class})
     public ResponseEntity<CommonException> handleCommonExceptions(Exception exception) {
-        if (exception instanceof MethodArgumentNotValidException) {
-            return ResponseEntity.badRequest().body(new CommonException(METHOD_ARGUMENT_NOT_VALID_MESSAGE));
-        }
         return ResponseEntity.badRequest().body(new CommonException(exception.getMessage()));
     }
 }

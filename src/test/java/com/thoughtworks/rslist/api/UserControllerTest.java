@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.pgleqi.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,8 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 class UserControllerTest {
+    @Autowired
     MockMvc mockMvc;
+
     ObjectMapper objectMapper = new ObjectMapper();
 
     final String ADD_USER_URL = "/user";
@@ -45,7 +50,7 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new UserController()).build();
+        // mockMvc = MockMvcBuilders.standaloneSetup(new UserController()).build();
         UserController.userList.clear();
     }
 
@@ -192,5 +197,15 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[1]", hasKey("user_email")))
                 .andExpect(jsonPath("$[1]", hasKey("user_phone")))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_return_bad_request_if_post_params_invalid_when_create_one_user() throws Exception {
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userOver100Ages)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
     }
 }
