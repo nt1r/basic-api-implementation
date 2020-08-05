@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,10 +48,13 @@ class RsControllerTestInitBeforeEach {
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类一")))
+                .andExpect(jsonPath("$[0]", hasKey("user")))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类二")))
+                .andExpect(jsonPath("$[1]", hasKey("user")))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyword", is("分类三")))
+                .andExpect(jsonPath("$[2]", hasKey("user")))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
     }
@@ -61,16 +65,19 @@ class RsControllerTestInitBeforeEach {
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$.eventName", is("第一条事件")))
                 .andExpect(jsonPath("$.keyword", is("分类一")))
+                .andExpect(jsonPath("$", hasKey("user")))
                 .andExpect(status().isOk());
         mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_URL, 1)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$.eventName", is("第二条事件")))
                 .andExpect(jsonPath("$.keyword", is("分类二")))
+                .andExpect(jsonPath("$", hasKey("user")))
                 .andExpect(status().isOk());
         mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_URL, 2)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$.eventName", is("第三条事件")))
                 .andExpect(jsonPath("$.keyword", is("分类三")))
+                .andExpect(jsonPath("$", hasKey("user")))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
     }
@@ -81,33 +88,43 @@ class RsControllerTestInitBeforeEach {
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类一")))
+                .andExpect(jsonPath("$[0]", hasKey("user")))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类二")))
+                .andExpect(jsonPath("$[1]", hasKey("user")))
                 .andExpect(status().isOk());
         mockMvc.perform(get(String.format(GET_MULTIPLE_RS_EVENT_URL, 1, 2)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$[0].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类二")))
+                .andExpect(jsonPath("$[0]", hasKey("user")))
                 .andExpect(jsonPath("$[1].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类三")))
+                .andExpect(jsonPath("$[1]", hasKey("user")))
                 .andExpect(status().isOk());
         mockMvc.perform(get(String.format(GET_MULTIPLE_RS_EVENT_URL, 0, 2)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类一")))
+                .andExpect(jsonPath("$[0]", hasKey("user")))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类二")))
+                .andExpect(jsonPath("$[1]", hasKey("user")))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyword", is("分类三")))
+                .andExpect(jsonPath("$[2]", hasKey("user")))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/list").accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类一")))
+                .andExpect(jsonPath("$[0]", hasKey("user")))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类二")))
+                .andExpect(jsonPath("$[1]", hasKey("user")))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyword", is("分类三")))
+                .andExpect(jsonPath("$[2]", hasKey("user")))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
     }
@@ -144,6 +161,7 @@ class RsControllerTestInitBeforeEach {
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$.eventName", is("事件已更改")))
                 .andExpect(jsonPath("$.keyword", is("分类已更改")))
+                .andExpect(jsonPath("$", hasKey("user")))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
     }
@@ -157,8 +175,10 @@ class RsControllerTestInitBeforeEach {
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类一")))
+                .andExpect(jsonPath("$[0]", hasKey("user")))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类二")))
+                .andExpect(jsonPath("$[1]", hasKey("user")))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
     }
