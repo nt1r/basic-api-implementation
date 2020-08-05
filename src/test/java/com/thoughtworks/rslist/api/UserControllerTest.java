@@ -66,7 +66,7 @@ class UserControllerTest {
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userDwight)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
         int userCountBeforeCreateSameUser = UserController.userList.size();
 
         mockMvc.perform(post(ADD_USER_URL)
