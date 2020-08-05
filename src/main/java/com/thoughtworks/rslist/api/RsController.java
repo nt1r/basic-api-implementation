@@ -7,6 +7,8 @@ import com.thoughtworks.rslist.component.GlobalExceptionHandler;
 import com.thoughtworks.rslist.exceptions.ListRangeIndexException;
 import com.thoughtworks.rslist.pgleqi.RsEvent;
 import com.thoughtworks.rslist.pgleqi.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,12 @@ import java.util.List;
 
 @RestController
 public class RsController {
+    public static final String UNKNOWN_ERROR = "Unknown Error";
+    public static final String INVALID_PARAM = "invalid param";
     public static List<RsEvent> rsList = new ArrayList<>();
     ObjectMapper objectMapper;
+
+    Logger logger = LoggerFactory.getLogger(RsController.class);
 
     public RsController() throws JsonProcessingException {
         User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
@@ -99,9 +105,11 @@ public class RsController {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<CommonException> handleCommonExceptions(Exception exception) {
         if (exception instanceof MethodArgumentNotValidException) {
-            return ResponseEntity.badRequest().body(new CommonException("invalid param"));
+            logger.error(INVALID_PARAM);
+            return ResponseEntity.badRequest().body(new CommonException(INVALID_PARAM));
         } else {
-            throw new RuntimeException("Unknown");
+            logger.error(UNKNOWN_ERROR);
+            throw new RuntimeException(UNKNOWN_ERROR);
         }
     }
 }

@@ -3,6 +3,8 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.component.CommonException;
 import com.thoughtworks.rslist.pgleqi.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +16,12 @@ import java.util.List;
 
 @RestController
 public class UserController {
+    public static final String INVALID_USER = "invalid user";
+    public static final String UNKNOWN_ERROR = "Unknown Error";
     public static List<User> userList = new ArrayList<>();
     ObjectMapper objectMapper;
+
+    Logger logger = LoggerFactory.getLogger(RsController.class);
 
     public UserController() {
         objectMapper = new ObjectMapper();
@@ -44,9 +50,11 @@ public class UserController {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<CommonException> handleCommonExceptions(Exception exception) {
         if (exception instanceof MethodArgumentNotValidException) {
-            return ResponseEntity.badRequest().body(new CommonException("invalid user"));
+            logger.error(INVALID_USER);
+            return ResponseEntity.badRequest().body(new CommonException(INVALID_USER));
         } else {
-            throw new RuntimeException("Unknown");
+            logger.error(INVALID_USER);
+            throw new RuntimeException(UNKNOWN_ERROR);
         }
     }
 }
