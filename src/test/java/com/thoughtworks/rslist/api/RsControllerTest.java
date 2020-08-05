@@ -215,4 +215,12 @@ class RsControllerTest {
                 .content(objectMapper.writeValueAsBytes(userNullEvent)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void should_return_bad_request_when_index_invalid() throws Exception {
+        mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_URL, 8)).accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error", is("invalid index")));
+    }
 }

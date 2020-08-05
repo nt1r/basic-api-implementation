@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.component.GlobalExceptionHandler;
 import com.thoughtworks.rslist.pgleqi.RsEvent;
 import com.thoughtworks.rslist.pgleqi.User;
 import org.springframework.http.HttpHeaders;
@@ -30,8 +31,15 @@ public class RsController {
     }
 
     @GetMapping("/rs/{index}")
-    public RsEvent getOneRsEventByIndex(@PathVariable int index) {
-        return rsList.get(index);
+    public ResponseEntity getOneRsEventByIndex(@PathVariable int index) {
+        if (!isIndexValid(index, rsList)) {
+            return GlobalExceptionHandler.handleCommonExceptions(new IndexOutOfBoundsException("invalid index"));
+        }
+        return ResponseEntity.ok(rsList.get(index));
+    }
+
+    private boolean isIndexValid(int index, List<RsEvent> rsList) {
+        return index >= 0 && index < rsList.size();
     }
 
     @GetMapping("/rs/list")
