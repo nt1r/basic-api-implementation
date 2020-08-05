@@ -7,6 +7,7 @@ import com.thoughtworks.rslist.pgleqi.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -15,6 +16,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 class RsControllerTest {
     final String GET_ONE_RS_EVENT_URL = "/rs/%d";
     final String GET_MULTIPLE_RS_EVENT_URL = "/rs/list?start=%d&end=%d";
@@ -34,11 +39,18 @@ class RsControllerTest {
     final User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
     final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
     MockMvc mockMvc;
 
     @BeforeEach
-    public void init() throws JsonProcessingException {
-        mockMvc = MockMvcBuilders.standaloneSetup(new RsController()).build();
+    public void setUp() throws JsonProcessingException {
+        // mockMvc = MockMvcBuilders.standaloneSetup(new RsController()).build();
+        //mockMvc = MockMvcBuilders.standaloneSetup()
+        // mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        RsController.rsList.clear();
+        RsController.rsList.add(new RsEvent("第一条事件", "分类一", userDwight));
+        RsController.rsList.add(new RsEvent("第二条事件", "分类二", userDwight));
+        RsController.rsList.add(new RsEvent("第三条事件", "分类三", userDwight));
     }
 
     @Test
@@ -221,6 +233,19 @@ class RsControllerTest {
         mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_URL, 8)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.error", is("invalid index")));
+                .andExpect(jsonPath("$.error", is("invalid index")));
+    }
+
+    @Test
+    public void should_return_bad_request_when_range_of_index_invalid() throws Exception {
+        mockMvc.perform(get(String.format(GET_MULTIPLE_RS_EVENT_URL, 5, 7)).accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+
+        mockMvc.perform(get(String.format(GET_MULTIPLE_RS_EVENT_URL, 2, 0)).accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
     }
 }

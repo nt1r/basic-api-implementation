@@ -17,11 +17,10 @@ import java.util.List;
 @RestController
 public class RsController {
     ObjectMapper objectMapper;
-    private List<RsEvent> rsList;
+    public static List<RsEvent> rsList = new ArrayList<>();
 
     public RsController() throws JsonProcessingException {
         User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
-        rsList = new ArrayList<>();
         rsList.add(new RsEvent("第一条事件", "分类一", userDwight));
         rsList.add(new RsEvent("第二条事件", "分类二", userDwight));
         rsList.add(new RsEvent("第三条事件", "分类三", userDwight));
@@ -31,9 +30,10 @@ public class RsController {
     }
 
     @GetMapping("/rs/{index}")
-    public ResponseEntity getOneRsEventByIndex(@PathVariable int index) {
+    public ResponseEntity getOneRsEventByIndex(@PathVariable int index) throws IndexOutOfBoundsException {
         if (!isIndexValid(index, rsList)) {
-            return GlobalExceptionHandler.handleCommonExceptions(new IndexOutOfBoundsException("invalid index"));
+            throw new IndexOutOfBoundsException("invalid index");
+            // return GlobalExceptionHandler.handleCommonExceptions(new IndexOutOfBoundsException("invalid index"));
         }
         return ResponseEntity.ok(rsList.get(index));
     }
@@ -43,12 +43,21 @@ public class RsController {
     }
 
     @GetMapping("/rs/list")
-    public List<RsEvent> getRsEventListBetweenIndexes(@RequestParam(required = false) Integer start,
+    public ResponseEntity getRsEventListBetweenIndexes(@RequestParam(required = false) Integer start,
                                                       @RequestParam(required = false) Integer end) {
         if (start == null || end == null) {
-            return rsList;
+            return ResponseEntity.ok(rsList);
         }
-        return rsList.subList(start, end + 1);
+        if (!isRangeIndexValid(start, end, rsList)) {
+            // return GlobalExceptionHandler.handleCommonExceptions(new RuntimeException("invalid request param"));
+            throw new RuntimeException("invalid request param");
+        }
+
+        return ResponseEntity.ok(rsList.subList(start, end + 1));
+    }
+
+    private boolean isRangeIndexValid(Integer start, Integer end, List<RsEvent> rsList) {
+        return isIndexValid(start, rsList) && isIndexValid(end, rsList) && start <= end;
     }
 
     @PostMapping("/rs")
