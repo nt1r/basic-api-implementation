@@ -1,4 +1,4 @@
-### 作业描述
+### 作业要求
 
 * 将所有接口的返回值都替换成使用ResponseEntity
 * 所有post请求都返回201,并且返回的头部带上index字段（值为创建的资源在列表中的位置：eg: 添加的热搜事件在列表中的index）
@@ -18,3 +18,4 @@
 
 <span style="color: red"> 注意：最终需要将改动合并到master分支 </span> 
 
+notice: 注意@Valid和@Validated的配合使用
