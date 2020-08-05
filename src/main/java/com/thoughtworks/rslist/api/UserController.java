@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.pgleqi.User;
 import org.springframework.http.*;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,11 @@ public class UserController {
         }
         userList.add(user);
         return generateResponseEntity(user, userList.size() - 1, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/users")
+    public List<User> getAllUsers() {
+        return userList;
     }
 
     private ResponseEntity<User> generateResponseEntity(User user, int index, HttpStatus statusCode) {

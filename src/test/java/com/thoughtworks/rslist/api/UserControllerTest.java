@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,6 +28,7 @@ class UserControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     final String ADD_USER_URL = "/user";
+    final String GET_ALL_USERS = "/users";
 
     final User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
     final User userNameTooLong = new User("DwightClaudette", 25, "male", "michaelleqihust@gmail.com", "18706789189");
@@ -39,6 +41,7 @@ class UserControllerTest {
     final User userPhoneNumberNotStartWithOne = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "88706789189");
     final User userPhoneNumberNotContain11Numbers = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "187067891");
     final User userPhoneNumberNull = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", null);
+    final User userClaudette = new User("Claudette", 23, "female", "michaelleqisnnu@gmail.com", "18888888888");
 
     @BeforeEach
     void setUp() {
@@ -168,5 +171,26 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userPhoneNumberNull)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_rename_user_properties_in_response_body() throws Exception {
+        UserController.userList.add(userDwight);
+        UserController.userList.add(userClaudette);
+
+        mockMvc.perform(get(GET_ALL_USERS))
+                .andExpect(jsonPath("$[0]", hasKey("user_name")))
+                .andExpect(jsonPath("$[0].user_name", is("Dwight")))
+                .andExpect(jsonPath("$[0]", hasKey("user_age")))
+                .andExpect(jsonPath("$[0]", hasKey("user_gender")))
+                .andExpect(jsonPath("$[0]", hasKey("user_email")))
+                .andExpect(jsonPath("$[0]", hasKey("user_phone")))
+                .andExpect(jsonPath("$[1]", hasKey("user_name")))
+                .andExpect(jsonPath("$[1].user_name", is("Claudette")))
+                .andExpect(jsonPath("$[1]", hasKey("user_age")))
+                .andExpect(jsonPath("$[1]", hasKey("user_gender")))
+                .andExpect(jsonPath("$[1]", hasKey("user_email")))
+                .andExpect(jsonPath("$[1]", hasKey("user_phone")))
+                .andExpect(status().isOk());
     }
 }
