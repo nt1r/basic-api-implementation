@@ -24,6 +24,7 @@ public class User {
     @Email
     private String email;
 
+    @NotNull
     @Pattern(regexp = "1\\d{10}")
     private String phone;
 

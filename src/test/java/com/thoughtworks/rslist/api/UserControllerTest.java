@@ -34,6 +34,9 @@ class UserControllerTest {
     final User userBelow18Ages = new User("Dwight", 15, "male", "michaelleqihust@gmail.com", "18706789189");
     final User userAgeNull = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
     final User userEmailInvalid = new User("Dwight", 25, "male", "aaa%@@gmail.com", "18706789189");
+    final User userPhoneNumberNotStartWithOne = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "88706789189");
+    final User userPhoneNumberNotContain11Numbers = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "187067891");
+    final User userPhoneNumberNull = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", null);
 
     @BeforeEach
     void setUp() {
@@ -132,6 +135,33 @@ class UserControllerTest {
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userEmailInvalid)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_create_user_with_phone_number_not_start_with_1() throws Exception {
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userPhoneNumberNotStartWithOne)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_create_user_with_phone_number_not_contains_11_numbers() throws Exception {
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userPhoneNumberNotContain11Numbers)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_create_user_with_phone_number_null() throws Exception {
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userPhoneNumberNull)))
                 .andExpect(status().isBadRequest());
     }
 }
