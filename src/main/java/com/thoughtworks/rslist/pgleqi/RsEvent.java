@@ -1,8 +1,16 @@
 package com.thoughtworks.rslist.pgleqi;
 
+import javax.validation.constraints.NotNull;
+
 public class RsEvent {
+    @NotNull
     private String eventName;
+
+    @NotNull
     private String keyword;
+
+    @NotNull
+    private User user;
 
     public RsEvent() {
     }
@@ -26,5 +34,13 @@ public class RsEvent {
 
     public void setKeyword(String keyword) {
         this.keyword = keyword;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
