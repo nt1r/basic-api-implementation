@@ -33,6 +33,7 @@ class UserControllerTest {
     final User userOver100Ages = new User("Dwight", 250, "male", "michaelleqihust@gmail.com", "18706789189");
     final User userBelow18Ages = new User("Dwight", 15, "male", "michaelleqihust@gmail.com", "18706789189");
     final User userAgeNull = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
+    final User userEmailInvalid = new User("Dwight", 25, "male", "aaa%@@gmail.com", "18706789189");
 
     @BeforeEach
     void setUp() {
@@ -122,6 +123,15 @@ class UserControllerTest {
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userAgeNull)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_not_create_user_with_invalid_email() throws Exception {
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userEmailInvalid)))
                 .andExpect(status().isBadRequest());
     }
 }
