@@ -138,6 +138,7 @@ class RsControllerTestInitBeforeEach {
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$.eventName", is("第四条事件")))
                 .andExpect(jsonPath("$.keyword", is("分类四")))
+                .andExpect(jsonPath("$", hasKey("user")))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
     }
