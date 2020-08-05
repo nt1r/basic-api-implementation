@@ -3,8 +3,10 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.pgleqi.RsEvent;
+import com.thoughtworks.rslist.pgleqi.User;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +16,11 @@ public class RsController {
     private List<RsEvent> rsList;
 
     public RsController() throws JsonProcessingException {
+        User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
         rsList = new ArrayList<>();
-        rsList.add(new RsEvent("第一条事件", "分类一"));
-        rsList.add(new RsEvent("第二条事件", "分类二"));
-        rsList.add(new RsEvent("第三条事件", "分类三"));
+        rsList.add(new RsEvent("第一条事件", "分类一", userDwight));
+        rsList.add(new RsEvent("第二条事件", "分类二", userDwight));
+        rsList.add(new RsEvent("第三条事件", "分类三", userDwight));
 
         objectMapper = new ObjectMapper();
         // System.out.println(objectMapper.writeValueAsString(rsList.get(0)));
@@ -31,25 +34,26 @@ public class RsController {
     @GetMapping("/rs/list")
     public List<RsEvent> getRsEventListBetweenIndexes(@RequestParam(required = false) Integer start,
                                                       @RequestParam(required = false) Integer end) {
-        if (start == null && end == null) {
+        if (start == null || end == null) {
             return rsList;
         }
         return rsList.subList(start, end + 1);
     }
 
     @PostMapping("/rs")
-    public void postOneRsEvent(@RequestBody RsEvent rsEvent) {
+    public void postOneRsEvent(@RequestBody @Valid RsEvent rsEvent) {
         rsList.add(rsEvent);
     }
 
     @PutMapping("/rs")
-    public void putOneRsEvent(@RequestParam int index, @RequestBody RsEvent updateRsEvent) {
+    public void putOneRsEvent(@RequestParam int index, @RequestBody @Valid RsEvent updateRsEvent) {
         assignRsEventFromUpdatedOne(rsList.get(index), updateRsEvent);
     }
 
     private void assignRsEventFromUpdatedOne(RsEvent originRsEvent, RsEvent updateRsEvent) {
         originRsEvent.setEventName(updateRsEvent.getEventName());
         originRsEvent.setKeyword(updateRsEvent.getKeyword());
+        originRsEvent.setUser(updateRsEvent.getUser());
     }
 
     @DeleteMapping("/rs")

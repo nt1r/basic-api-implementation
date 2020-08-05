@@ -17,7 +17,7 @@ public class UserController {
 
     public UserController() {
         userList = new ArrayList<>();
-        userList.add(new User("Dwight", 25, "cat", "michaelleqihust@gmail.com", "18706789189"));
+        userList.add(new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189"));
 
         objectMapper = new ObjectMapper();
     }

@@ -1,5 +1,8 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.pgleqi.RsEvent;
+import com.thoughtworks.rslist.pgleqi.User;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -26,6 +29,9 @@ class RsControllerTest {
     final String POST_ONE_RS_EVENT_URL = "/rs";
     final String PUT_ONE_RS_EVENT_URL = "/rs?index=%d";
     final String DELETE_ONE_RS_EVENT_URL = "/rs?index=%d";
+
+    final User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
+    final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     MockMvc mockMvc;
@@ -107,7 +113,7 @@ class RsControllerTest {
         mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
-                .content("{\"eventName\":\"第四条事件\",\"keyword\":\"分类四\"}"))
+                .content(objectMapper.writeValueAsBytes(new RsEvent("第四条事件", "分类四", userDwight))))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_URL, 3)).accept(MediaType.APPLICATION_JSON)
@@ -123,7 +129,7 @@ class RsControllerTest {
         mockMvc.perform(put(String.format(PUT_ONE_RS_EVENT_URL, 2))
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
-                .content("{\"eventName\":\"事件已更改\",\"keyword\":\"分类已更改\"}"))
+                .content(objectMapper.writeValueAsBytes(new RsEvent("事件已更改", "分类已更改", userDwight))))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_URL, 2)).accept(MediaType.APPLICATION_JSON)
