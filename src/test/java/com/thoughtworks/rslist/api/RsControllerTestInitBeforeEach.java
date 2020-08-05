@@ -13,9 +13,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -111,11 +114,12 @@ class RsControllerTestInitBeforeEach {
 
     @Test
     public void should_add_one_rs_event_by_json() throws Exception {
-        mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
+        MvcResult mvcResult = mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(objectMapper.writeValueAsBytes(new RsEvent("第四条事件", "分类四", userDwight))))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated())
+                .andReturn();
 
         mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_URL, 3)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
@@ -123,6 +127,9 @@ class RsControllerTestInitBeforeEach {
                 .andExpect(jsonPath("$.keyword", is("分类四")))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
+
+        assertTrue(mvcResult.getResponse().containsHeader("index"));
+        assertEquals("3", mvcResult.getResponse().getHeader("index"));
     }
 
     @Test
