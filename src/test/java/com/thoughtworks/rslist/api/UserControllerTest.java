@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.Matchers.is;
@@ -46,13 +48,16 @@ class UserControllerTest {
 
     @Test
     void should_create_one_user() throws Exception {
-        mockMvc.perform(post(ADD_USER_URL)
+        MvcResult mvcResult = mockMvc.perform(post(ADD_USER_URL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userDwight)))
-                .andExpect(status().isOk());
-
+                .andExpect(status().isCreated())
+                .andReturn();
         assertEquals(1, UserController.userList.size());
+
+        assertTrue(mvcResult.getResponse().containsHeader("index"));
+        assertEquals("0", mvcResult.getResponse().getHeader("index"));
     }
 
     @Test

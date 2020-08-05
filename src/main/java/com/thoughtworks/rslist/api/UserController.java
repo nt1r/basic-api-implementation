@@ -2,10 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.pgleqi.User;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,9 +24,15 @@ public class UserController {
     @PostMapping("/user")
     public ResponseEntity<User> createOneUser(@RequestBody @Valid User user) {
         if (userList.contains(user)) {
-            return new ResponseEntity<>(user, HttpStatus.ALREADY_REPORTED);
+            return generateResponseEntity(user, userList.indexOf(user), HttpStatus.ALREADY_REPORTED);
         }
         userList.add(user);
-        return ResponseEntity.ok(user);
+        return generateResponseEntity(user, userList.size() - 1, HttpStatus.CREATED);
+    }
+
+    private ResponseEntity<User> generateResponseEntity(User user, int index, HttpStatus statusCode) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("index", String.valueOf(index));
+        return new ResponseEntity<>(user, httpHeaders, statusCode);
     }
 }
