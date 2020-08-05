@@ -38,4 +38,18 @@ public class User {
         this.email = email;
         this.phone = phone;
     }
+
+    @Override
+    public int hashCode() {
+        return userName.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof User)) {
+            return false;
+        }
+        User user = (User) obj;
+        return user.userName.equals(this.userName);
+    }
 }

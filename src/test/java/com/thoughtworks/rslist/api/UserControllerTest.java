@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.pgleqi.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,5 +43,24 @@ class UserControllerTest {
                 .andExpect(status().isOk());
 
         assertEquals(1, UserController.userList.size());
+    }
+
+    @Test
+    void should_not_create_exist_user() throws Exception {
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userDwight)))
+                .andExpect(status().isOk());
+        int userCountBeforeCreateSameUser = UserController.userList.size();
+
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userDwight)))
+                .andExpect(status().isAlreadyReported());
+        int userCountAfterCreateSameUser = UserController.userList.size();
+
+        assertEquals(userCountBeforeCreateSameUser, userCountAfterCreateSameUser);
     }
 }
