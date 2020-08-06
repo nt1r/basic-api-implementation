@@ -36,6 +36,7 @@ class RsControllerTest {
     final String PUT_ONE_RS_EVENT_URL = "/rs/?index=%d";
     final String DELETE_ONE_RS_EVENT_URL = "/rs/?index=%d";
     final String POST_ONE_RS_EVENT_NEW_URL = "/rs/event";
+    final String PATCH_ONE_RS_EVENT_URL = "/rs/%d";
 
     final User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
     final ObjectMapper objectMapper = new ObjectMapper();
@@ -299,5 +300,50 @@ class RsControllerTest {
                 .characterEncoding("UTF-8")
                 .content(requestJson))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void should_update_rs_event_when_patch_if_user_id_matches_rs_event_id() throws Exception {
+        int firstEventId = rsEventRepository.findAll().get(0).getId();
+        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getID();
+        String requestJson = String.format("{\"eventName\":\"已更新事件\",\"keyword\":\"分类已更新\",\"userId\":\"%d\"}", dwightID);
+        mockMvc.perform(patch(String.format(PATCH_ONE_RS_EVENT_URL, firstEventId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .content(requestJson))
+                .andExpect(status().isOk());
+
+        assertEquals("已更新事件", rsEventRepository.findById(firstEventId).get().getEventName());
+        assertEquals("分类已更新", rsEventRepository.findById(firstEventId).get().getKeyword());
+    }
+
+    @Test
+    public void should_update_rs_event_name_when_patch_if_user_id_matches_rs_event_id() throws Exception {
+        int firstEventId = rsEventRepository.findAll().get(0).getId();
+        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getID();
+        String requestJson = String.format("{\"eventName\":\"已更新事件\",\"userId\":\"%d\"}", dwightID);
+        mockMvc.perform(patch(String.format(PATCH_ONE_RS_EVENT_URL, firstEventId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .content(requestJson))
+                .andExpect(status().isOk());
+
+        assertEquals("已更新事件", rsEventRepository.findById(firstEventId).get().getEventName());
+        assertEquals("分类一", rsEventRepository.findById(firstEventId).get().getKeyword());
+    }
+
+    @Test
+    public void should_update_rs_event_keyword_when_patch_if_user_id_matches_rs_event_id() throws Exception {
+        int firstEventId = rsEventRepository.findAll().get(0).getId();
+        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getID();
+        String requestJson = String.format("{\"keyword\":\"分类已更新\",\"userId\":\"%d\"}", dwightID);
+        mockMvc.perform(patch(String.format(PATCH_ONE_RS_EVENT_URL, firstEventId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .content(requestJson))
+                .andExpect(status().isOk());
+
+        assertEquals("第一条事件", rsEventRepository.findById(firstEventId).get().getEventName());
+        assertEquals("分类已更新", rsEventRepository.findById(firstEventId).get().getKeyword());
     }
 }
