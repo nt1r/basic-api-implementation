@@ -285,9 +285,19 @@ class RsControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(requestJson))
-                .andExpect(status().isCreated())
-                .andReturn();
+                .andExpect(status().isCreated());
 
         assertEquals(4L, rsEventRepository.count());
+    }
+
+    @Test
+    public void should_return_bad_request_when_post_rs_event_if_user_id_not_exist() throws Exception {
+        int invalidUserId = 10000;
+        String requestJson = String.format("{\"eventName\":\"第四条事件\",\"keyword\":\"分类四\",\"userId\":\"%d\"}", invalidUserId);
+        mockMvc.perform(post(POST_ONE_RS_EVENT_NEW_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .content(requestJson))
+                .andExpect(status().isBadRequest());
     }
 }

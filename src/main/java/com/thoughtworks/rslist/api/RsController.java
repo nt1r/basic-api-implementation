@@ -140,6 +140,9 @@ public class RsController {
 
     @PostMapping("/rs/event")
     public ResponseEntity postOneRsEventNew(@RequestBody @Valid RsEventEntity rsEventEntity) {
+        if (!userRepository.findById(Integer.valueOf(rsEventEntity.getUserId())).isPresent()) {
+            return generateResponseEntity(rsEventEntity, -1, HttpStatus.BAD_REQUEST);
+        }
         rsEventRepository.save(rsEventEntity);
         return generateResponseEntity(rsEventEntity, rsEventRepository.count() - 1, HttpStatus.CREATED);
     }
