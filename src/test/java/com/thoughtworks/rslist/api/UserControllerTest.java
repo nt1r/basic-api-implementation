@@ -29,6 +29,8 @@ class UserControllerTest {
     final String ADD_USER_URL = "/user";
     final String GET_ALL_USERS_URL = "/users";
     final String GET_ONE_USER_URL = "/user/%d";
+    final String DELETE_ONE_USER_URL = "/user/%d";
+
     final User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
     final User userNameTooLong = new User("DwightClaudette", 25, "male", "michaelleqihust@gmail.com", "18706789189");
     final User userNameNull = new User(null, 25, "male", "michaelleqihust@gmail.com", "18706789189");
@@ -58,25 +60,16 @@ class UserControllerTest {
 
     @Test
     void should_create_one_user() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(post(ADD_USER_URL)
-                .characterEncoding("UTF-8")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(userDwight)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        assertEquals(1L, UserController.userRepository.count());
+        MvcResult mvcResult = addOneNormalUserTest();
 
+        assertEquals(1L, UserController.userRepository.count());
         assertTrue(mvcResult.getResponse().containsHeader("index"));
         assertEquals("0", mvcResult.getResponse().getHeader("index"));
     }
 
     @Test
     void should_not_create_exist_user() throws Exception {
-        mockMvc.perform(post(ADD_USER_URL)
-                .characterEncoding("UTF-8")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(userDwight)))
-                .andExpect(status().isCreated());
+        addOneNormalUserTest();
         long userCountBeforeCreateSameUser = UserController.userRepository.count();
 
         mockMvc.perform(post(ADD_USER_URL)
@@ -219,13 +212,7 @@ class UserControllerTest {
 
     @Test
     void should_return_user_when_get_user_if_id_valid() throws Exception {
-        mockMvc.perform(post(ADD_USER_URL)
-                .characterEncoding("UTF-8")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(userDwight)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        assertEquals(1L, UserController.userRepository.count());
+        addOneNormalUserTest();
 
         int userId = UserController.userRepository.findAll().get(0).getID();
         mockMvc.perform(get(String.format(GET_ONE_USER_URL, userId))
@@ -237,19 +224,51 @@ class UserControllerTest {
 
     @Test
     void should_return_bad_request_when_get_user_if_id_invalid() throws Exception {
-        mockMvc.perform(post(ADD_USER_URL)
+        addOneNormalUserTest();
+
+        int userIdInvalid = UserController.userRepository.findAll().get(0).getID() + 1;
+        mockMvc.perform(get(String.format(GET_ONE_USER_URL, userIdInvalid))
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(jsonPath("$.error", is(UserController.USER_ID_NOT_EXIST)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_return_when_delete_user_exist() throws Exception {
+        addOneNormalUserTest();
+
+        int userId = UserController.userRepository.findAll().get(0).getID();
+        mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, userId))
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertEquals(0L, UserController.userRepository.count());
+    }
+
+    @Test
+    void should_return_bad_request_when_delete_user_not_exist() throws Exception {
+        addOneNormalUserTest();
+
+        int userIdInvalid = UserController.userRepository.findAll().get(0).getID() + 1;
+        mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, userIdInvalid))
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is(UserController.USER_ID_NOT_EXIST)))
+                .andReturn();
+        assertEquals(1L, UserController.userRepository.count());
+    }
+
+    private MvcResult addOneNormalUserTest() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(post(ADD_USER_URL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userDwight)))
                 .andExpect(status().isCreated())
                 .andReturn();
-        assertEquals(1L, UserController.userRepository.count());
 
-        int userId = UserController.userRepository.findAll().get(0).getID() + 1;
-        mockMvc.perform(get(String.format(GET_ONE_USER_URL, userId))
-                .accept(MediaType.APPLICATION_JSON)
-                .characterEncoding("UTF-8"))
-                .andExpect(jsonPath("$.error", is(UserController.USER_ID_NOT_EXIST)))
-                .andExpect(status().isBadRequest());
+        return mvcResult;
     }
 }

@@ -98,14 +98,21 @@ public class UserController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity getOneUser(@PathVariable int userId) {
-        Optional<UserEntity> userEntityOptional = userRepository.findById(userId);
-        if (!userEntityOptional.isPresent()) {
+        if (!userRepository.existsById(userId)) {
             throw new NoSuchElementException(USER_ID_NOT_EXIST);
         }
-        UserEntity userEntity = userEntityOptional.get();
+        UserEntity userEntity = userRepository.findById(userId).get();
         return ResponseEntity.ok(convertUserEntity2User(userEntity));
     }
 
+    @DeleteMapping("/user/{userId}")
+    public ResponseEntity deleteOneUser(@PathVariable int userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NoSuchElementException(USER_ID_NOT_EXIST);
+        }
+        userRepository.deleteById(userId);
+        return ResponseEntity.ok(userId);
+    }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<CommonException> handleCommonExceptions(Exception exception) {
