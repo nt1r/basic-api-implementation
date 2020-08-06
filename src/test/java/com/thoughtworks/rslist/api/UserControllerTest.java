@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.pgleqi.User;
+import com.thoughtworks.rslist.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ class UserControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @Autowired
+    UserRepository userRepository;
+
     ObjectMapper objectMapper = new ObjectMapper();
 
     final String ADD_USER_URL = "/user";
@@ -52,7 +56,9 @@ class UserControllerTest {
     @BeforeEach
     void setUp() {
         // mockMvc = MockMvcBuilders.standaloneSetup(new UserController()).build();
-        UserController.userList.clear();
+        // UserController.userList.clear();
+        UserController.userRepository = userRepository;
+        UserController.userRepository.deleteAll();
     }
 
     @Test
@@ -63,7 +69,7 @@ class UserControllerTest {
                 .content(objectMapper.writeValueAsBytes(userDwight)))
                 .andExpect(status().isCreated())
                 .andReturn();
-        assertEquals(1, UserController.userList.size());
+        assertEquals(1L, UserController.userRepository.count());
 
         assertTrue(mvcResult.getResponse().containsHeader("index"));
         assertEquals("0", mvcResult.getResponse().getHeader("index"));
@@ -76,14 +82,14 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userDwight)))
                 .andExpect(status().isCreated());
-        int userCountBeforeCreateSameUser = UserController.userList.size();
+        long userCountBeforeCreateSameUser = UserController.userRepository.count();
 
         mockMvc.perform(post(ADD_USER_URL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userDwight)))
                 .andExpect(status().isAlreadyReported());
-        int userCountAfterCreateSameUser = UserController.userList.size();
+        long userCountAfterCreateSameUser = UserController.userRepository.count();
 
         assertEquals(userCountBeforeCreateSameUser, userCountAfterCreateSameUser);
     }
@@ -181,8 +187,8 @@ class UserControllerTest {
 
     @Test
     void should_rename_user_properties_in_response_body() throws Exception {
-        UserController.userList.add(userDwight);
-        UserController.userList.add(userClaudette);
+        UserController.userRepository.save(UserController.convertUser2UserEntity(userDwight));
+        UserController.userRepository.save(UserController.convertUser2UserEntity(userClaudette));
 
         mockMvc.perform(get(GET_ALL_USERS))
                 .andExpect(jsonPath("$[0]", hasKey("user_name")))

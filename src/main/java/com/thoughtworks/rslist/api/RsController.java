@@ -7,8 +7,10 @@ import com.thoughtworks.rslist.component.GlobalExceptionHandler;
 import com.thoughtworks.rslist.exceptions.ListRangeIndexException;
 import com.thoughtworks.rslist.pgleqi.RsEvent;
 import com.thoughtworks.rslist.pgleqi.User;
+import com.thoughtworks.rslist.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,8 +75,12 @@ public class RsController {
     @PostMapping("/rs")
     public ResponseEntity postOneRsEvent(@RequestBody @Valid RsEvent rsEvent) {
         rsList.add(rsEvent);
-        if (!UserController.userList.contains(rsEvent.getUser())) {
+        /*if (!UserController.userList.contains(rsEvent.getUser())) {
             UserController.userList.add(rsEvent.getUser());
+        }*/
+        int userIndex = UserController.findUserIndex(rsEvent.getUser());
+        if (userIndex == -1) {
+            UserController.userRepository.save(UserController.convertUser2UserEntity(rsEvent.getUser()));
         }
         return generateResponseEntity(rsEvent, rsList.size() - 1, HttpStatus.CREATED);
     }
