@@ -30,12 +30,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RsControllerTest {
     public static final String RS_EVENT_NOT_EXIST = "rs event not exist";
     public static final String INVALID_REQUEST_PARAM = "invalid request param";
-    public static final String INVALID_PARAM = "invalid param";
     final String GET_ONE_RS_EVENT_BY_INDEX_URL = "/rs/%d";
     final String GET_MULTIPLE_RS_EVENT_URL = "/rs/list?start=%d&end=%d";
     final String POST_ONE_RS_EVENT_URL = "/rs";
     final String PUT_ONE_RS_EVENT_URL = "/rs/?index=%d";
     final String DELETE_ONE_RS_EVENT_URL = "/rs/?index=%d";
+    final String POST_ONE_RS_EVENT_NEW_URL = "/rs/event";
 
     final User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
     final ObjectMapper objectMapper = new ObjectMapper();
@@ -264,7 +264,7 @@ class RsControllerTest {
                 .characterEncoding("UTF-8")
                 .content("{\"eventName\":null,\"keyword\":\"分类四\",\"user\":{\"user_name\":\"Dwight\",\"user_age\":25,\"user_gender\":\"male\",\"user_email\":\"michaelleqihust@gmail.com\",\"user_phone\":\"18706789189\"}}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error", is(INVALID_PARAM)));
+                .andExpect(jsonPath("$.error", is("invalid param")));
     }
 
     @Test
@@ -274,6 +274,20 @@ class RsControllerTest {
                 .characterEncoding("UTF-8")
                 .content("{\"eventName\":\"第四条事件\",\"keyword\":\"分类四\",\"user\":{\"user_name\":\"Dwight\",\"user_age\":200,\"user_gender\":\"male\",\"user_email\":\"michaelleqihust@gmail.com\",\"user_phone\":\"18706789189\"}}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error", is(INVALID_PARAM)));
+                .andExpect(jsonPath("$.error", is("invalid param")));
+    }
+
+    @Test
+    public void should_return_ok_when_post_rs_event_with_new_api() throws Exception {
+        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getID();
+        String requestJson = String.format("{\"eventName\":\"第四条事件\",\"keyword\":\"分类四\",\"userId\":\"%d\"}", dwightID);
+        mockMvc.perform(post(POST_ONE_RS_EVENT_NEW_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        assertEquals(4L, rsEventRepository.count());
     }
 }

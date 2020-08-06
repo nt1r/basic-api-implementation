@@ -110,14 +110,6 @@ public class RsController {
         return ResponseEntity.ok(rsEventList.subList(start, end + 1));
     }
 
-    /*private List<RsEvent> convertRsEventEntity2RsEvent(List<RsEventEntity> rsEventEntityList) {
-        List<RsEvent> convertedResultList = new ArrayList<>();
-        for (RsEventEntity rsEventEntity: rsEventEntityList) {
-            convertedResultList.add(convertRsEventEntity2RsEvent(rsEventEntity));
-        }
-        return convertedResultList;
-    }*/
-
     private boolean isRangeIndexValid(Integer start, Integer end, List<RsEventEntity> rsList) {
         return isIndexValid(start, rsList) && isIndexValid(end, rsList) && start <= end;
     }
@@ -146,10 +138,17 @@ public class RsController {
         rsEventRepository.deleteById(rsEventEntityList.get(index).getId());
     }
 
-    private ResponseEntity<RsEvent> generateResponseEntity(RsEvent rsEvent, long index, HttpStatus statusCode) {
+    @PostMapping("/rs/event")
+    public ResponseEntity postOneRsEventNew(@RequestBody @Valid RsEventEntity rsEventEntity) {
+        rsEventRepository.save(rsEventEntity);
+        return generateResponseEntity(rsEventEntity, rsEventRepository.count() - 1, HttpStatus.CREATED);
+    }
+    /* ====== */
+
+    private ResponseEntity generateResponseEntity(Object body, long index, HttpStatus statusCode) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("index", String.valueOf(index));
-        return new ResponseEntity<>(rsEvent, httpHeaders, statusCode);
+        return new ResponseEntity(body, httpHeaders, statusCode);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
