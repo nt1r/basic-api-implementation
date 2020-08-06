@@ -220,7 +220,7 @@ class UserControllerTest {
     void should_return_user_when_get_user_if_id_valid() throws Exception {
         addOneNormalUserTest();
 
-        int userId = userRepository.findAll().get(0).getID();
+        int userId = userRepository.findAll().get(0).getId();
         mockMvc.perform(get(String.format(GET_ONE_USER_URL, userId))
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
@@ -232,7 +232,7 @@ class UserControllerTest {
     void should_return_bad_request_when_get_user_if_id_invalid() throws Exception {
         addOneNormalUserTest();
 
-        int userIdInvalid = userRepository.findAll().get(0).getID() + 1;
+        int userIdInvalid = userRepository.findAll().get(0).getId() + 1;
         mockMvc.perform(get(String.format(GET_ONE_USER_URL, userIdInvalid))
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
@@ -244,7 +244,7 @@ class UserControllerTest {
     void should_return_when_delete_user_exist() throws Exception {
         addOneNormalUserTest();
 
-        int userId = userRepository.findAll().get(0).getID();
+        int userId = userRepository.findAll().get(0).getId();
         mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, userId))
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -256,7 +256,7 @@ class UserControllerTest {
     void should_return_bad_request_when_delete_user_not_exist() throws Exception {
         addOneNormalUserTest();
 
-        int userIdInvalid = userRepository.findAll().get(0).getID() + 1;
+        int userIdInvalid = userRepository.findAll().get(0).getId() + 1;
         mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, userIdInvalid))
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -272,7 +272,7 @@ class UserControllerTest {
         rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第二条事件", "分类二", userDwight)));
         rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第三条事件", "分类三", userDwight)));
 
-        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getID();
+        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getId();
         assertNotEquals(0, rsEventRepository.count());
         mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, dwightID))
                 .characterEncoding("UTF-8")

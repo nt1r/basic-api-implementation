@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 
 import static com.thoughtworks.rslist.util.Convertor.convertRsEvent2RsEventEntity;
 import static com.thoughtworks.rslist.util.Convertor.convertRsEventEntity2RsEvent;
+import static com.thoughtworks.rslist.util.Generator.generateResponseEntity;
 
 @RestController
 public class RsController {
@@ -166,12 +167,6 @@ public class RsController {
     }
 
     /* ====== */
-
-    private ResponseEntity generateResponseEntity(Object body, long index, HttpStatus statusCode) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("index", String.valueOf(index));
-        return new ResponseEntity(body, httpHeaders, statusCode);
-    }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<CommonException> handleCommonExceptions(Exception exception) {

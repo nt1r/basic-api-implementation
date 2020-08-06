@@ -16,7 +16,7 @@ public class Convertor {
     /* RsEvent */
     public static RsEventEntity convertRsEvent2RsEventEntity(UserRepository userRepository, RsEvent rsEvent) {
         int userId = userRepository.findByUserName(rsEvent.getUser().getUserName()).isPresent()
-                ? userRepository.findByUserName(rsEvent.getUser().getUserName()).get().getID()
+                ? userRepository.findByUserName(rsEvent.getUser().getUserName()).get().getId()
                 : 0;
         return RsEventEntity.builder()
                 .eventName(rsEvent.getEventName())

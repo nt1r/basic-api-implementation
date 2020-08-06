@@ -20,7 +20,7 @@ import java.util.List;
 public class UserEntity {
     @Id
     @GeneratedValue
-    private Integer ID;
+    private Integer id;
 
     @Column(name = "name")
     private String userName;

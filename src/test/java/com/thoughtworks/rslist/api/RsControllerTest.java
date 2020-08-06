@@ -280,7 +280,7 @@ class RsControllerTest {
 
     @Test
     public void should_return_ok_when_post_rs_event_with_new_api() throws Exception {
-        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getID();
+        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getId();
         String requestJson = String.format("{\"eventName\":\"第四条事件\",\"keyword\":\"分类四\",\"userId\":\"%d\"}", dwightID);
         mockMvc.perform(post(POST_ONE_RS_EVENT_NEW_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -305,7 +305,7 @@ class RsControllerTest {
     @Test
     public void should_update_rs_event_when_patch_if_user_id_matches_rs_event_id() throws Exception {
         int firstEventId = rsEventRepository.findAll().get(0).getId();
-        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getID();
+        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getId();
         String requestJson = String.format("{\"eventName\":\"已更新事件\",\"keyword\":\"分类已更新\",\"userId\":\"%d\"}", dwightID);
         mockMvc.perform(patch(String.format(PATCH_ONE_RS_EVENT_URL, firstEventId))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -320,7 +320,7 @@ class RsControllerTest {
     @Test
     public void should_update_rs_event_name_when_patch_if_user_id_matches_rs_event_id() throws Exception {
         int firstEventId = rsEventRepository.findAll().get(0).getId();
-        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getID();
+        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getId();
         String requestJson = String.format("{\"eventName\":\"已更新事件\",\"userId\":\"%d\"}", dwightID);
         mockMvc.perform(patch(String.format(PATCH_ONE_RS_EVENT_URL, firstEventId))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -335,7 +335,7 @@ class RsControllerTest {
     @Test
     public void should_update_rs_event_keyword_when_patch_if_user_id_matches_rs_event_id() throws Exception {
         int firstEventId = rsEventRepository.findAll().get(0).getId();
-        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getID();
+        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getId();
         String requestJson = String.format("{\"keyword\":\"分类已更新\",\"userId\":\"%d\"}", dwightID);
         mockMvc.perform(patch(String.format(PATCH_ONE_RS_EVENT_URL, firstEventId))
                 .contentType(MediaType.APPLICATION_JSON)

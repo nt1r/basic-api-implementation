@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static com.thoughtworks.rslist.util.Convertor.convertUser2UserEntity;
 import static com.thoughtworks.rslist.util.Convertor.convertUserEntity2User;
+import static com.thoughtworks.rslist.util.Generator.generateResponseEntity;
 
 @RestController
 public class UserController {
@@ -53,12 +54,6 @@ public class UserController {
     public List<User> getAllUsers() {
         List<UserEntity> userEntityList = userRepository.findAll();
         return convertUserEntity2User(userEntityList);
-    }
-
-    private ResponseEntity<User> generateResponseEntity(User user, long index, HttpStatus statusCode) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("index", String.valueOf(index));
-        return new ResponseEntity<>(user, httpHeaders, statusCode);
     }
 
     @GetMapping("/user/{userId}")
