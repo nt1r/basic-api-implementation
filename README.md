@@ -58,3 +58,4 @@
 
 <span style="color: red"> 注意：最终需要将改动合并到master分支 </span> 
 
+notice: 注意@Valid和@Validated的配合使用
