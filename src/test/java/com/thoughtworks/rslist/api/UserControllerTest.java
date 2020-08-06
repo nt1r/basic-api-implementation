@@ -2,7 +2,9 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.pgleqi.RsEvent;
 import com.thoughtworks.rslist.pgleqi.User;
+import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static com.thoughtworks.rslist.util.Convertor.convertRsEvent2RsEventEntity;
 import static com.thoughtworks.rslist.util.Convertor.convertUser2UserEntity;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
@@ -49,6 +52,9 @@ class UserControllerTest {
     MockMvc mockMvc;
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RsEventRepository rsEventRepository;
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
@@ -242,8 +248,7 @@ class UserControllerTest {
         mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, userId))
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(status().isOk());
         assertEquals(0L, userRepository.count());
     }
 
@@ -256,10 +261,27 @@ class UserControllerTest {
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error", is(UserController.USER_ID_NOT_EXIST)))
-                .andReturn();
+                .andExpect(jsonPath("$.error", is(UserController.USER_ID_NOT_EXIST)));
         assertEquals(1L, userRepository.count());
     }
+
+    @Test
+    void should_delete_all_rs_events_related_with_user_when_delete_user() throws Exception {
+        userRepository.save(convertUser2UserEntity(userDwight));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第一条事件", "分类一", userDwight)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第二条事件", "分类二", userDwight)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第三条事件", "分类三", userDwight)));
+
+        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getID();
+        assertNotEquals(0, rsEventRepository.count());
+        mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, dwightID))
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        assertEquals(0, rsEventRepository.count());
+    }
+
+    /* ====== */
 
     private MvcResult addOneNormalUserTest() throws Exception {
         MvcResult mvcResult = mockMvc.perform(post(ADD_USER_URL)
