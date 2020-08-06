@@ -346,4 +346,19 @@ class RsControllerTest {
         assertEquals("第一条事件", rsEventRepository.findById(firstEventId).get().getEventName());
         assertEquals("分类已更新", rsEventRepository.findById(firstEventId).get().getKeyword());
     }
+
+    @Test
+    public void should_return_bad_request_when_patch_if_user_id_not_matches_rs_event_id() throws Exception {
+        int firstEventId = rsEventRepository.findAll().get(0).getId();
+        int disMatchUserId = 1000;
+        String requestJson = String.format("{\"keyword\":\"分类已更新\",\"userId\":\"%d\"}", disMatchUserId);
+        mockMvc.perform(patch(String.format(PATCH_ONE_RS_EVENT_URL, firstEventId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .content(requestJson))
+                .andExpect(status().isBadRequest());
+
+        assertEquals("第一条事件", rsEventRepository.findById(firstEventId).get().getEventName());
+        assertEquals("分类一", rsEventRepository.findById(firstEventId).get().getKeyword());
+    }
 }

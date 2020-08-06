@@ -161,7 +161,7 @@ public class RsController {
             rsEventRepository.save(rsEventEntityInDB);
             return generateResponseEntity(rsEventEntityInDB, rsEventId, HttpStatus.OK);
         } else {
-            return null;
+            return generateResponseEntity(rsEventEntityInDB, rsEventId, HttpStatus.BAD_REQUEST);
         }
     }
 
