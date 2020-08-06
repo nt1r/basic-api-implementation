@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
     Logger logger = LoggerFactory.getLogger(RsController.class);
 
-    @ExceptionHandler({IndexOutOfBoundsException.class, ListRangeIndexException.class})
+    @ExceptionHandler({Exception.class})
     public ResponseEntity<CommonException> handleCommonExceptions(Exception exception) {
         logger.error(exception.getMessage());
         return ResponseEntity.badRequest().body(new CommonException(exception.getMessage()));

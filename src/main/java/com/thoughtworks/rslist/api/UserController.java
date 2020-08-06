@@ -15,20 +15,23 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RestController
 public class UserController {
     public static final String INVALID_USER = "invalid user";
     public static final String UNKNOWN_ERROR = "Unknown Error";
+    public static final String USER_ID_NOT_EXIST = "userId not exist";
     // public static List<User> userList = new ArrayList<>();
     public static UserRepository userRepository;
     ObjectMapper objectMapper;
 
     Logger logger = LoggerFactory.getLogger(RsController.class);
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository injectedUserRepository) {
         objectMapper = new ObjectMapper();
-        this.userRepository = userRepository;
+        userRepository = injectedUserRepository;
     }
 
     public static Integer findUserIndex(User user) {
@@ -92,6 +95,17 @@ public class UserController {
         httpHeaders.add("index", String.valueOf(index));
         return new ResponseEntity<>(user, httpHeaders, statusCode);
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity getOneUser(@PathVariable int userId) {
+        Optional<UserEntity> userEntityOptional = userRepository.findById(userId);
+        if (!userEntityOptional.isPresent()) {
+            throw new NoSuchElementException(USER_ID_NOT_EXIST);
+        }
+        UserEntity userEntity = userEntityOptional.get();
+        return ResponseEntity.ok(convertUserEntity2User(userEntity));
+    }
+
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<CommonException> handleCommonExceptions(Exception exception) {

@@ -12,8 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
@@ -28,17 +26,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserControllerTest {
-    @Autowired
-    MockMvc mockMvc;
-
-    @Autowired
-    UserRepository userRepository;
-
-    ObjectMapper objectMapper = new ObjectMapper();
-
     final String ADD_USER_URL = "/user";
-    final String GET_ALL_USERS = "/users";
-
+    final String GET_ALL_USERS_URL = "/users";
+    final String GET_ONE_USER_URL = "/user/%d";
     final User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
     final User userNameTooLong = new User("DwightClaudette", 25, "male", "michaelleqihust@gmail.com", "18706789189");
     final User userNameNull = new User(null, 25, "male", "michaelleqihust@gmail.com", "18706789189");
@@ -52,6 +42,11 @@ class UserControllerTest {
     final User userPhoneNumberNull = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", null);
     final User userClaudette = new User("Claudette", 23, "female", "michaelleqisnnu@gmail.com", "18888888888");
     final User userWithGenderCat = new User("Dwight", 25, "cat", "michaelleqihust@gmail.com", "18706789189");
+    @Autowired
+    MockMvc mockMvc;
+    @Autowired
+    UserRepository userRepository;
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
@@ -190,7 +185,7 @@ class UserControllerTest {
         UserController.userRepository.save(UserController.convertUser2UserEntity(userDwight));
         UserController.userRepository.save(UserController.convertUser2UserEntity(userClaudette));
 
-        mockMvc.perform(get(GET_ALL_USERS))
+        mockMvc.perform(get(GET_ALL_USERS_URL))
                 .andExpect(jsonPath("$[0]", hasKey("user_name")))
                 .andExpect(jsonPath("$[0].user_name", is("Dwight")))
                 .andExpect(jsonPath("$[0]", hasKey("user_age")))
@@ -219,6 +214,42 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userWithGenderCat)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error", is("invalid user")));
+                .andExpect(jsonPath("$.error", is(UserController.INVALID_USER)));
+    }
+
+    @Test
+    void should_return_user_when_get_user_if_id_valid() throws Exception {
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userDwight)))
+                .andExpect(status().isCreated())
+                .andReturn();
+        assertEquals(1L, UserController.userRepository.count());
+
+        int userId = UserController.userRepository.findAll().get(0).getID();
+        mockMvc.perform(get(String.format(GET_ONE_USER_URL, userId))
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(jsonPath("$.user_name", is("Dwight")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_return_bad_request_when_get_user_if_id_invalid() throws Exception {
+        mockMvc.perform(post(ADD_USER_URL)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(userDwight)))
+                .andExpect(status().isCreated())
+                .andReturn();
+        assertEquals(1L, UserController.userRepository.count());
+
+        int userId = UserController.userRepository.findAll().get(0).getID() + 1;
+        mockMvc.perform(get(String.format(GET_ONE_USER_URL, userId))
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(jsonPath("$.error", is(UserController.USER_ID_NOT_EXIST)))
+                .andExpect(status().isBadRequest());
     }
 }
