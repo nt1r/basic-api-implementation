@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user")
-@Builder
+@Builder()
 public class UserEntity {
     @Id
     @GeneratedValue
@@ -33,7 +33,8 @@ public class UserEntity {
 
     private String phone;
 
-    private Integer votes;
+    @Builder.Default
+    private Integer voteNumLeft = 10;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "userId")
     private List<RsEventEntity> events;

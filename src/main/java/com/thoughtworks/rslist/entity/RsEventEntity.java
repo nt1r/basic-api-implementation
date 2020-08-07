@@ -25,6 +25,11 @@ public class RsEventEntity {
 
     private String keyword;
 
+    private Integer voteNumSum;
+
     @Column(name = "user_id")
     private String userId;
+
+    @ManyToOne
+    private UserEntity userEntity;
 }

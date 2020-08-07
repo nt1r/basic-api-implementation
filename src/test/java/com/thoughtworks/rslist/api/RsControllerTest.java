@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDate;
+
 import static com.thoughtworks.rslist.util.Convertor.convertRsEvent2RsEventEntity;
 import static com.thoughtworks.rslist.util.Convertor.convertUser2UserEntity;
 import static org.hamcrest.Matchers.*;

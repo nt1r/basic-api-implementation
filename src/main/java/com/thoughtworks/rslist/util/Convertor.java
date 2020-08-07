@@ -21,7 +21,7 @@ public class Convertor {
         return RsEventEntity.builder()
                 .eventName(rsEvent.getEventName())
                 .keyword(rsEvent.getKeyword())
-                .userId(String.valueOf(userId))
+                .userEntity(userRepository.findByUserName(rsEvent.getUser().getUserName()).get())
                 .build();
     }
 
@@ -65,7 +65,7 @@ public class Convertor {
                 .gender(user.getGender())
                 .email(user.getEmail())
                 .phone(user.getPhone())
-                .votes(10)
+                .voteNumLeft(10)
                 .build();
     }
     /* User */

@@ -30,7 +30,7 @@ public class UserController {
     public static final String USER_ID_NOT_EXIST = "userId not exist";
     // public static List<User> userList = new ArrayList<>();
     @Autowired
-    public UserRepository userRepository;
+    private UserRepository userRepository;
     ObjectMapper objectMapper;
 
     Logger logger = LoggerFactory.getLogger(RsController.class);

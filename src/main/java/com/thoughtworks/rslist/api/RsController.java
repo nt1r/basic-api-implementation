@@ -38,10 +38,10 @@ public class RsController {
     public static final String RS_EVENT_NOT_EXIST = "rs event not exist";
 
     @Autowired
-    public RsEventRepository rsEventRepository;
+    private RsEventRepository rsEventRepository;
 
     @Autowired
-    public UserRepository userRepository;
+    private UserRepository userRepository;
 
     ObjectMapper objectMapper;
     Logger logger = LoggerFactory.getLogger(RsController.class);
