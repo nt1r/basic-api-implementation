@@ -23,11 +23,15 @@ public class VoteEntity {
 
     private LocalDate voteTime;
 
-    /*@ManyToOne
-    @JoinColumn(name = "user_id")
+    private Integer userId;
+
+    private Integer rsEventId;
+
+    @ManyToOne
+    @JoinColumn(name = "u_id")
     private UserEntity userEntity;
 
     @ManyToOne
-    @JoinColumn(name = "rs_event_id")
-    private RsEventEntity rsEventEntity;*/
+    @JoinColumn(name = "e_id")
+    private RsEventEntity rsEventEntity;
 }

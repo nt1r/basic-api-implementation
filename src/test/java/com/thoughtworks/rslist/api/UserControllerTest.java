@@ -267,14 +267,13 @@ class UserControllerTest {
 
     @Test
     void should_delete_all_rs_events_related_with_user_when_delete_user() throws Exception {
-        userRepository.save(convertUser2UserEntity(userDwight));
-        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第一条事件", "分类一", userDwight)));
-        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第二条事件", "分类二", userDwight)));
-        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第三条事件", "分类三", userDwight)));
+        int dwightId = userRepository.save(convertUser2UserEntity(userDwight)).getId();
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第一条事件", "分类一", dwightId)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第二条事件", "分类二", dwightId)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第三条事件", "分类三", dwightId)));
 
-        int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getId();
         assertNotEquals(0, rsEventRepository.count());
-        mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, dwightID))
+        mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, dwightId))
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

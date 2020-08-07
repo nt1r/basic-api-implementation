@@ -37,10 +37,10 @@ class RsControllerTest {
     final String POST_ONE_RS_EVENT_URL = "/rs";
     final String PUT_ONE_RS_EVENT_URL = "/rs/?index=%d";
     final String DELETE_ONE_RS_EVENT_URL = "/rs/?index=%d";
-    final String POST_ONE_RS_EVENT_NEW_URL = "/rs/event";
     final String PATCH_ONE_RS_EVENT_URL = "/rs/%d";
 
     final User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
+    int dwightId;
     final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
@@ -57,11 +57,11 @@ class RsControllerTest {
         rsEventRepository.deleteAll();
         userRepository.deleteAll();
 
-        userRepository.save(convertUser2UserEntity(userDwight));
+        dwightId = userRepository.save(convertUser2UserEntity(userDwight)).getId();
 
-        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第一条事件", "分类一", userDwight)));
-        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第二条事件", "分类二", userDwight)));
-        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第三条事件", "分类三", userDwight)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第一条事件", "分类一", dwightId)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第二条事件", "分类二", dwightId)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第三条事件", "分类三", dwightId)));
     }
 
     @Test
@@ -153,10 +153,11 @@ class RsControllerTest {
 
     @Test
     public void should_add_one_rs_event_by_json() throws Exception {
+        String requestJson = String.format("{\"eventName\":\"第四条事件\",\"keyword\":\"分类四\",\"userId\":\"%d\"}", dwightId);
         MvcResult mvcResult = mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
-                .content("{\"eventName\":\"第四条事件\",\"keyword\":\"分类四\",\"user\":{\"user_name\":\"Dwight\",\"user_age\":25,\"user_gender\":\"male\",\"user_email\":\"michaelleqihust@gmail.com\",\"user_phone\":\"18706789189\"}}"))
+                .content(requestJson))
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -174,10 +175,12 @@ class RsControllerTest {
 
     @Test
     public void should_update_third_rs_event() throws Exception {
+        String requestJson = String.format("{\"eventName\":\"事件已更改\",\"keyword\":\"分类已更改\",\"userId\":\"%d\"}", dwightId);
+
         mockMvc.perform(put(String.format(PUT_ONE_RS_EVENT_URL, 2))
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
-                .content("{\"eventName\":\"事件已更改\",\"keyword\":\"分类已更改\",\"user\":{\"user_name\":\"Dwight\",\"user_age\":25,\"user_gender\":\"male\",\"user_email\":\"michaelleqihust@gmail.com\",\"user_phone\":\"18706789189\"}}"))
+                .content(requestJson))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_BY_INDEX_URL, 2)).accept(MediaType.APPLICATION_JSON)
@@ -208,7 +211,7 @@ class RsControllerTest {
 
     @Test
     public void should_throw_bad_request_if_event_name_is_null_when_add_new_rs_event() throws Exception {
-        RsEvent nameNullEvent = new RsEvent(null, "分类四", userDwight);
+        RsEvent nameNullEvent = new RsEvent(null, "分类四", dwightId);
 
         mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -219,7 +222,7 @@ class RsControllerTest {
 
     @Test
     public void should_throw_bad_request_if_keyword_is_null_when_add_new_rs_event() throws Exception {
-        RsEvent keywordNullEvent = new RsEvent("第四条事件", null, userDwight);
+        RsEvent keywordNullEvent = new RsEvent("第四条事件", null, dwightId);
 
         mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -284,7 +287,7 @@ class RsControllerTest {
     public void should_return_ok_when_post_rs_event_with_new_api() throws Exception {
         int dwightID = userRepository.findByUserName(userDwight.getUserName()).get().getId();
         String requestJson = String.format("{\"eventName\":\"第四条事件\",\"keyword\":\"分类四\",\"userId\":\"%d\"}", dwightID);
-        mockMvc.perform(post(POST_ONE_RS_EVENT_NEW_URL)
+        mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(requestJson))
@@ -297,7 +300,7 @@ class RsControllerTest {
     public void should_return_bad_request_when_post_rs_event_if_user_id_not_exist() throws Exception {
         int invalidUserId = 10000;
         String requestJson = String.format("{\"eventName\":\"第四条事件\",\"keyword\":\"分类四\",\"userId\":\"%d\"}", invalidUserId);
-        mockMvc.perform(post(POST_ONE_RS_EVENT_NEW_URL)
+        mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(requestJson))

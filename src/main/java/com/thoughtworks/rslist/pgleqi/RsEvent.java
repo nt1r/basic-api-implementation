@@ -16,16 +16,15 @@ public class RsEvent {
     private String keyword;
 
     @NotNull
-    @Valid
-    private User user;
+    private Integer userId;
 
     public RsEvent() {
     }
 
-    public RsEvent(String eventName, String keyword, User user) {
+    public RsEvent(String eventName, String keyword, Integer userId) {
         this.eventName = eventName;
         this.keyword = keyword;
-        this.user = user;
+        this.userId = userId;
     }
 
     public String getEventName() {
@@ -45,12 +44,12 @@ public class RsEvent {
     }
 
     @JsonIgnore
-    public User getUser() {
-        return user;
+    public Integer getUserId() {
+        return userId;
     }
 
     @JsonProperty
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 }

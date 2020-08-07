@@ -25,10 +25,11 @@ public class RsEventEntity {
 
     private String keyword;
 
-    private Integer voteNumSum;
+    @Builder.Default
+    private Integer voteNumSum = 0;
 
     @Column(name = "user_id")
-    private String userId;
+    private Integer userId;
 
     @ManyToOne
     private UserEntity userEntity;

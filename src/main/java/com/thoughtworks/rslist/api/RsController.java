@@ -46,31 +46,9 @@ public class RsController {
     ObjectMapper objectMapper;
     Logger logger = LoggerFactory.getLogger(RsController.class);
 
-    public RsController() throws JsonProcessingException {
+    public RsController() {
         objectMapper = new ObjectMapper();
-        /*User userDwight = new User("Dwight", 25, "male", "michaelleqihust@gmail.com", "18706789189");
-        rsEventRepository.save(convertRsEvent2RsEventEntity(new RsEvent("第一条事件", "分类一", userDwight)));
-        rsEventRepository.save(convertRsEvent2RsEventEntity(new RsEvent("第二条事件", "分类二", userDwight)));
-        rsEventRepository.save(convertRsEvent2RsEventEntity(new RsEvent("第三条事件", "分类三", userDwight)));*/
     }
-
-    /*public RsEvent convertRsEventEntity2RsEvent(RsEventEntity rsEventEntity) {
-        UserEntity userEntity = userRepository.findById(Integer.valueOf(rsEventEntity.getUserId())).get();
-        return new RsEvent(rsEventEntity.getEventName(),
-                rsEventEntity.getKeyword(),
-                UserController.convertUserEntity2User(userEntity));
-    }*/
-
-    /*public RsEventEntity convertRsEvent2RsEventEntity(RsEvent rsEvent) {
-        int userId = userRepository.findByUserName(rsEvent.getUser().getUserName()).isPresent()
-                ? userRepository.findByUserName(rsEvent.getUser().getUserName()).get().getID()
-                : 0;
-        return RsEventEntity.builder()
-                .eventName(rsEvent.getEventName())
-                .keyword(rsEvent.getKeyword())
-                .userId(String.valueOf(userId))
-                .build();
-    }*/
 
     @GetMapping("/rs")
     public ResponseEntity getOneRsEventById(@RequestParam int id) throws IndexOutOfBoundsException {
@@ -78,7 +56,7 @@ public class RsController {
             throw new NoSuchElementException(RS_EVENT_NOT_EXIST);
         }
         RsEventEntity rsEventEntity = rsEventRepository.findById(id).get();
-        return ResponseEntity.ok(convertRsEventEntity2RsEvent(userRepository, rsEventEntity));
+        return ResponseEntity.ok(convertRsEventEntity2RsEvent(rsEventEntity));
     }
 
     @GetMapping("/rs/{index}")
@@ -88,7 +66,7 @@ public class RsController {
             throw new NoSuchElementException(RS_EVENT_NOT_EXIST);
         }
         RsEventEntity rsEventEntity = rsEventEntityList.get(index);
-        return ResponseEntity.ok(convertRsEventEntity2RsEvent(userRepository, rsEventEntity));
+        return ResponseEntity.ok(convertRsEventEntity2RsEvent(rsEventEntity));
     }
 
 
@@ -101,14 +79,14 @@ public class RsController {
                                                        @RequestParam(required = false) Integer end) throws ListRangeIndexException {
         List<RsEventEntity> rsEventEntityList = rsEventRepository.findAll();
         if (start == null || end == null) {
-            return ResponseEntity.ok(rsEventRepository.findAll());
+            return ResponseEntity.ok(convertRsEventEntity2RsEvent(rsEventEntityList));
         }
         if (!isRangeIndexValid(start, end, rsEventEntityList)) {
             // return GlobalExceptionHandler.handleCommonExceptions(new RuntimeException("invalid request param"));
             throw new ListRangeIndexException("invalid request param");
         }
 
-        List<RsEvent> rsEventList = convertRsEventEntity2RsEvent(userRepository, rsEventEntityList);
+        List<RsEvent> rsEventList = convertRsEventEntity2RsEvent(rsEventEntityList);
         return ResponseEntity.ok(rsEventList.subList(start, end + 1));
     }
 
@@ -140,24 +118,15 @@ public class RsController {
         rsEventRepository.deleteById(rsEventEntityList.get(index).getId());
     }
 
-    @PostMapping("/rs/event")
-    public ResponseEntity postOneRsEventNew(@RequestBody @Valid RsEventEntity rsEventEntity) {
-        if (!userRepository.findById(Integer.valueOf(rsEventEntity.getUserId())).isPresent()) {
-            return generateResponseEntity(rsEventEntity, -1, HttpStatus.BAD_REQUEST);
-        }
-        rsEventRepository.save(rsEventEntity);
-        return generateResponseEntity(rsEventEntity, rsEventRepository.count() - 1, HttpStatus.CREATED);
-    }
-
     @PatchMapping(path = "/rs/{rsEventId}")
-    public ResponseEntity patchOneRsEvent(@PathVariable int rsEventId, @RequestBody RsEventEntity rsEventEntity) {
+    public ResponseEntity patchOneRsEvent(@PathVariable int rsEventId, @RequestBody RsEvent rsEvent) {
         RsEventEntity rsEventEntityInDB = rsEventRepository.findById(rsEventId).get();
-        if (rsEventEntity.getUserId().equals(rsEventEntityInDB.getUserId())) {
-            if (rsEventEntity.getEventName() != null) {
-                rsEventEntityInDB.setEventName(rsEventEntity.getEventName());
+        if (rsEvent.getUserId().equals(rsEventEntityInDB.getUserEntity().getId())) {
+            if (rsEvent.getEventName() != null) {
+                rsEventEntityInDB.setEventName(rsEvent.getEventName());
             }
-            if (rsEventEntity.getKeyword() != null) {
-                rsEventEntityInDB.setKeyword(rsEventEntity.getKeyword());
+            if (rsEvent.getKeyword() != null) {
+                rsEventEntityInDB.setKeyword(rsEvent.getKeyword());
             }
             rsEventRepository.save(rsEventEntityInDB);
             return generateResponseEntity(rsEventEntityInDB, rsEventId, HttpStatus.OK);

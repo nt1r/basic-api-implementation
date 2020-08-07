@@ -3,10 +3,13 @@ package com.thoughtworks.rslist.util;
 import com.thoughtworks.rslist.api.UserController;
 import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.entity.VoteEntity;
 import com.thoughtworks.rslist.pgleqi.RsEvent;
 import com.thoughtworks.rslist.pgleqi.User;
+import com.thoughtworks.rslist.pgleqi.Vote;
 import com.thoughtworks.rslist.repository.UserRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,27 +18,26 @@ public class Convertor {
 
     /* RsEvent */
     public static RsEventEntity convertRsEvent2RsEventEntity(UserRepository userRepository, RsEvent rsEvent) {
-        int userId = userRepository.findByUserName(rsEvent.getUser().getUserName()).isPresent()
-                ? userRepository.findByUserName(rsEvent.getUser().getUserName()).get().getId()
-                : 0;
         return RsEventEntity.builder()
                 .eventName(rsEvent.getEventName())
                 .keyword(rsEvent.getKeyword())
-                .userEntity(userRepository.findByUserName(rsEvent.getUser().getUserName()).get())
+                .voteNumSum(0)
+                .userId(rsEvent.getUserId())
+                .userEntity(userRepository.findById(rsEvent.getUserId()).get())
                 .build();
     }
 
-    public static RsEvent convertRsEventEntity2RsEvent(UserRepository userRepository, RsEventEntity rsEventEntity) {
-        UserEntity userEntity = userRepository.findById(Integer.valueOf(rsEventEntity.getUserId())).get();
+    public static RsEvent convertRsEventEntity2RsEvent(RsEventEntity rsEventEntity) {
+        UserEntity userEntity = rsEventEntity.getUserEntity();
         return new RsEvent(rsEventEntity.getEventName(),
                 rsEventEntity.getKeyword(),
-                convertUserEntity2User(userEntity));
+                userEntity.getId());
     }
 
-    public static List<RsEvent> convertRsEventEntity2RsEvent(UserRepository userRepository, List<RsEventEntity> rsEventEntityList) {
+    public static List<RsEvent> convertRsEventEntity2RsEvent(List<RsEventEntity> rsEventEntityList) {
         List<RsEvent> convertedResultList = new ArrayList<>();
         for (RsEventEntity rsEventEntity: rsEventEntityList) {
-            convertedResultList.add(convertRsEventEntity2RsEvent(userRepository, rsEventEntity));
+            convertedResultList.add(convertRsEventEntity2RsEvent(rsEventEntity));
         }
         return convertedResultList;
     }
@@ -69,4 +71,17 @@ public class Convertor {
                 .build();
     }
     /* User */
+
+    /* Vote */
+    public static Vote convertVoteEntity2Vote(VoteEntity voteEntity) {
+        return new Vote(voteEntity.getVoteNum(), voteEntity.getUserId(), voteEntity.getVoteTime().toString());
+    }
+
+    public static VoteEntity convertVote2VoteEntity(Vote vote) {
+        return VoteEntity.builder()
+                .voteNum(vote.getVoteNum())
+                .voteTime(LocalDate.parse(vote.getVoteTime()))
+                .build();
+    }
+    /* Vote */
 }
