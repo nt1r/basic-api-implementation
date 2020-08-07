@@ -75,7 +75,7 @@ public class Convertor {
 
     /* Vote */
     public static Vote convertVoteEntity2Vote(VoteEntity voteEntity) {
-        return new Vote(voteEntity.getVoteNum(), voteEntity.getUserId(), voteEntity.getVoteTime().toString());
+        return new Vote(voteEntity.getVoteNum(), voteEntity.getUserEntity().getId(), voteEntity.getVoteTime().toString());
     }
 
     public static VoteEntity convertVote2VoteEntity(Vote vote) {
@@ -83,6 +83,14 @@ public class Convertor {
                 .voteNum(vote.getVoteNum())
                 .voteTime(LocalDate.parse(vote.getVoteTime()))
                 .build();
+    }
+
+    public static List<Vote> convertVoteEntity2Vote(List<VoteEntity> voteEntityList) {
+        List<Vote> voteList = new ArrayList<>();
+        for (VoteEntity voteEntity: voteEntityList) {
+            voteList.add(convertVoteEntity2Vote(voteEntity));
+        }
+        return voteList;
     }
     /* Vote */
 }

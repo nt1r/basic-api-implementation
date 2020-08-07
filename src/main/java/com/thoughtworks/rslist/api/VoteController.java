@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import static com.thoughtworks.rslist.util.Convertor.convertVote2VoteEntity;
+import java.time.LocalDate;
+import java.util.List;
+
+import static com.thoughtworks.rslist.util.Convertor.*;
 import static com.thoughtworks.rslist.util.Generator.generateResponseEntity;
 
 
@@ -57,5 +57,11 @@ public class VoteController {
 
     private boolean isUserHasEnoughVoteNum(UserEntity userEntity, int voteNum) {
         return userEntity != null && userEntity.getVoteNumLeft() >= voteNum;
+    }
+
+    @GetMapping("/rs/vote/list")
+    public ResponseEntity findVoteListBetweenDates(@RequestParam String startDate, @RequestParam String endDate) {
+        List<VoteEntity> voteEntityList = voteRepository.findByStartDateAndEndDate(startDate, endDate);
+        return generateResponseEntity(convertVoteEntity2Vote(voteEntityList), -1, HttpStatus.OK);
     }
 }
