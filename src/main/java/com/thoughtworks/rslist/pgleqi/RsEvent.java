@@ -1,11 +1,8 @@
 package com.thoughtworks.rslist.pgleqi;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 public class RsEvent {
@@ -18,13 +15,17 @@ public class RsEvent {
     @NotNull
     private Integer userId;
 
+    @JsonProperty("voteNum")
+    private Integer voteNumSum;
+
     public RsEvent() {
     }
 
-    public RsEvent(String eventName, String keyword, Integer userId) {
+    public RsEvent(String eventName, String keyword, Integer userId, Integer voteNum) {
         this.eventName = eventName;
         this.keyword = keyword;
         this.userId = userId;
+        this.voteNumSum = voteNum;
     }
 
     public String getEventName() {
@@ -51,5 +52,13 @@ public class RsEvent {
     @JsonProperty
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public Integer getVoteNumSum() {
+        return voteNumSum;
+    }
+
+    public void setVoteNumSum(Integer voteNumSum) {
+        this.voteNumSum = voteNumSum;
     }
 }

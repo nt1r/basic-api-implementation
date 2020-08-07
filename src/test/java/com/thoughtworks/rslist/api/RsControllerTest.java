@@ -59,9 +59,9 @@ class RsControllerTest {
 
         dwightId = userRepository.save(convertUser2UserEntity(userDwight)).getId();
 
-        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第一条事件", "分类一", dwightId)));
-        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第二条事件", "分类二", dwightId)));
-        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第三条事件", "分类三", dwightId)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第一条事件", "分类一", dwightId, 0)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第二条事件", "分类二", dwightId, 0)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第三条事件", "分类三", dwightId, 0)));
     }
 
     @Test
@@ -71,12 +71,15 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类一")))
                 .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[0].voteNum", is(0)))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类二")))
                 .andExpect(jsonPath("$[1]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[1].voteNum", is(0)))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyword", is("分类三")))
                 .andExpect(jsonPath("$[2]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[2].voteNum", is(0)))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
     }
@@ -88,18 +91,21 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.eventName", is("第一条事件")))
                 .andExpect(jsonPath("$.keyword", is("分类一")))
                 .andExpect(jsonPath("$", not(hasKey("user"))))
+                .andExpect(jsonPath("$.voteNum", is(0)))
                 .andExpect(status().isOk());
         mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_BY_INDEX_URL, 1)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$.eventName", is("第二条事件")))
                 .andExpect(jsonPath("$.keyword", is("分类二")))
                 .andExpect(jsonPath("$", not(hasKey("user"))))
+                .andExpect(jsonPath("$.voteNum", is(0)))
                 .andExpect(status().isOk());
         mockMvc.perform(get(String.format(GET_ONE_RS_EVENT_BY_INDEX_URL, 2)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$.eventName", is("第三条事件")))
                 .andExpect(jsonPath("$.keyword", is("分类三")))
                 .andExpect(jsonPath("$", not(hasKey("user"))))
+                .andExpect(jsonPath("$.voteNum", is(0)))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
     }
@@ -111,42 +117,52 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类一")))
                 .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[0].voteNum", is(0)))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类二")))
                 .andExpect(jsonPath("$[1]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[1].voteNum", is(0)))
                 .andExpect(status().isOk());
         mockMvc.perform(get(String.format(GET_MULTIPLE_RS_EVENT_URL, 1, 2)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$[0].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类二")))
                 .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[0].voteNum", is(0)))
                 .andExpect(jsonPath("$[1].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类三")))
                 .andExpect(jsonPath("$[1]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[1].voteNum", is(0)))
                 .andExpect(status().isOk());
         mockMvc.perform(get(String.format(GET_MULTIPLE_RS_EVENT_URL, 0, 2)).accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类一")))
                 .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[0].voteNum", is(0)))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类二")))
                 .andExpect(jsonPath("$[1]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[1].voteNum", is(0)))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyword", is("分类三")))
                 .andExpect(jsonPath("$[2]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[2].voteNum", is(0)))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/list").accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类一")))
                 .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[0].voteNum", is(0)))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类二")))
                 .andExpect(jsonPath("$[1]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[1].voteNum", is(0)))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyword", is("分类三")))
                 .andExpect(jsonPath("$[2]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[2].voteNum", is(0)))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
     }
@@ -166,6 +182,7 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.eventName", is("第四条事件")))
                 .andExpect(jsonPath("$.keyword", is("分类四")))
                 .andExpect(jsonPath("$", not(hasKey("user"))))
+                .andExpect(jsonPath("$.voteNum", is(0)))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
 
@@ -188,6 +205,7 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.eventName", is("事件已更改")))
                 .andExpect(jsonPath("$.keyword", is("分类已更改")))
                 .andExpect(jsonPath("$", not(hasKey("user"))))
+                .andExpect(jsonPath("$.voteNum", is(0)))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
     }
@@ -202,16 +220,18 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyword", is("分类一")))
                 .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[0].voteNum", is(0)))
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword", is("分类二")))
                 .andExpect(jsonPath("$[1]", not(hasKey("user"))))
+                .andExpect(jsonPath("$[1].voteNum", is(0)))
                 .andExpect(status().isOk());
         // System.out.println(mockMvc);
     }
 
     @Test
     public void should_throw_bad_request_if_event_name_is_null_when_add_new_rs_event() throws Exception {
-        RsEvent nameNullEvent = new RsEvent(null, "分类四", dwightId);
+        RsEvent nameNullEvent = new RsEvent(null, "分类四", dwightId, 0);
 
         mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -222,7 +242,7 @@ class RsControllerTest {
 
     @Test
     public void should_throw_bad_request_if_keyword_is_null_when_add_new_rs_event() throws Exception {
-        RsEvent keywordNullEvent = new RsEvent("第四条事件", null, dwightId);
+        RsEvent keywordNullEvent = new RsEvent("第四条事件", null, dwightId, 0);
 
         mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -233,7 +253,7 @@ class RsControllerTest {
 
     @Test
     public void should_throw_bad_request_if_user_is_null_when_add_new_rs_event() throws Exception {
-        RsEvent userNullEvent = new RsEvent("第四条事件", "分类四", null);
+        RsEvent userNullEvent = new RsEvent("第四条事件", "分类四", null, 0);
 
         mockMvc.perform(post(POST_ONE_RS_EVENT_URL)
                 .contentType(MediaType.APPLICATION_JSON)

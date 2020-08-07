@@ -31,7 +31,8 @@ public class Convertor {
         UserEntity userEntity = rsEventEntity.getUserEntity();
         return new RsEvent(rsEventEntity.getEventName(),
                 rsEventEntity.getKeyword(),
-                userEntity.getId());
+                userEntity.getId(),
+                rsEventEntity.getVoteNumSum());
     }
 
     public static List<RsEvent> convertRsEventEntity2RsEvent(List<RsEventEntity> rsEventEntityList) {
