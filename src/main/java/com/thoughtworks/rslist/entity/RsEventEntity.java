@@ -8,34 +8,29 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user")
-@Builder()
-public class UserEntity {
+@Table(name = "rs_event")
+@Builder
+public class RsEventEntity {
     @Id
     @GeneratedValue
     private Integer id;
 
     @Column(name = "name")
-    private String userName;
+    private String eventName;
 
-    private Integer age;
-
-    private String gender;
-
-    private String email;
-
-    private String phone;
+    private String keyword;
 
     @Builder.Default
-    private Integer voteNumLeft = 10;
+    private Integer voteNumSum = 0;
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "userId")
-    private List<RsEventEntity> events;
+    @Column(name = "user_id")
+    private Integer userId;
+
+    @ManyToOne
+    private UserEntity userEntity;
 }

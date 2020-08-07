@@ -2,7 +2,9 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.pgleqi.RsEvent;
 import com.thoughtworks.rslist.pgleqi.User;
+import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static com.thoughtworks.rslist.util.Convertor.convertRsEvent2RsEventEntity;
+import static com.thoughtworks.rslist.util.Convertor.convertUser2UserEntity;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,21 +52,23 @@ class UserControllerTest {
     MockMvc mockMvc;
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RsEventRepository rsEventRepository;
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
         // mockMvc = MockMvcBuilders.standaloneSetup(new UserController()).build();
         // UserController.userList.clear();
-        UserController.userRepository = userRepository;
-        UserController.userRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     void should_create_one_user() throws Exception {
         MvcResult mvcResult = addOneNormalUserTest();
 
-        assertEquals(1L, UserController.userRepository.count());
+        assertEquals(1L, userRepository.count());
         assertTrue(mvcResult.getResponse().containsHeader("index"));
         assertEquals("0", mvcResult.getResponse().getHeader("index"));
     }
@@ -70,14 +76,14 @@ class UserControllerTest {
     @Test
     void should_not_create_exist_user() throws Exception {
         addOneNormalUserTest();
-        long userCountBeforeCreateSameUser = UserController.userRepository.count();
+        long userCountBeforeCreateSameUser = userRepository.count();
 
         mockMvc.perform(post(ADD_USER_URL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userDwight)))
                 .andExpect(status().isAlreadyReported());
-        long userCountAfterCreateSameUser = UserController.userRepository.count();
+        long userCountAfterCreateSameUser = userRepository.count();
 
         assertEquals(userCountBeforeCreateSameUser, userCountAfterCreateSameUser);
     }
@@ -175,8 +181,8 @@ class UserControllerTest {
 
     @Test
     void should_rename_user_properties_in_response_body() throws Exception {
-        UserController.userRepository.save(UserController.convertUser2UserEntity(userDwight));
-        UserController.userRepository.save(UserController.convertUser2UserEntity(userClaudette));
+        userRepository.save(convertUser2UserEntity(userDwight));
+        userRepository.save(convertUser2UserEntity(userClaudette));
 
         mockMvc.perform(get(GET_ALL_USERS_URL))
                 .andExpect(jsonPath("$[0]", hasKey("user_name")))
@@ -214,7 +220,7 @@ class UserControllerTest {
     void should_return_user_when_get_user_if_id_valid() throws Exception {
         addOneNormalUserTest();
 
-        int userId = UserController.userRepository.findAll().get(0).getID();
+        int userId = userRepository.findAll().get(0).getId();
         mockMvc.perform(get(String.format(GET_ONE_USER_URL, userId))
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
@@ -226,7 +232,7 @@ class UserControllerTest {
     void should_return_bad_request_when_get_user_if_id_invalid() throws Exception {
         addOneNormalUserTest();
 
-        int userIdInvalid = UserController.userRepository.findAll().get(0).getID() + 1;
+        int userIdInvalid = userRepository.findAll().get(0).getId() + 1;
         mockMvc.perform(get(String.format(GET_ONE_USER_URL, userIdInvalid))
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
@@ -238,28 +244,43 @@ class UserControllerTest {
     void should_return_when_delete_user_exist() throws Exception {
         addOneNormalUserTest();
 
-        int userId = UserController.userRepository.findAll().get(0).getID();
+        int userId = userRepository.findAll().get(0).getId();
         mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, userId))
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
-        assertEquals(0L, UserController.userRepository.count());
+                .andExpect(status().isOk());
+        assertEquals(0L, userRepository.count());
     }
 
     @Test
     void should_return_bad_request_when_delete_user_not_exist() throws Exception {
         addOneNormalUserTest();
 
-        int userIdInvalid = UserController.userRepository.findAll().get(0).getID() + 1;
+        int userIdInvalid = userRepository.findAll().get(0).getId() + 1;
         mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, userIdInvalid))
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error", is(UserController.USER_ID_NOT_EXIST)))
-                .andReturn();
-        assertEquals(1L, UserController.userRepository.count());
+                .andExpect(jsonPath("$.error", is(UserController.USER_ID_NOT_EXIST)));
+        assertEquals(1L, userRepository.count());
     }
+
+    @Test
+    void should_delete_all_rs_events_related_with_user_when_delete_user() throws Exception {
+        int dwightId = userRepository.save(convertUser2UserEntity(userDwight)).getId();
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第一条事件", "分类一", dwightId, 0)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第二条事件", "分类二", dwightId, 0)));
+        rsEventRepository.save(convertRsEvent2RsEventEntity(userRepository, new RsEvent("第三条事件", "分类三", dwightId, 0)));
+
+        assertNotEquals(0, rsEventRepository.count());
+        mockMvc.perform(delete(String.format(DELETE_ONE_USER_URL, dwightId))
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        assertEquals(0, rsEventRepository.count());
+    }
+
+    /* ====== */
 
     private MvcResult addOneNormalUserTest() throws Exception {
         MvcResult mvcResult = mockMvc.perform(post(ADD_USER_URL)
