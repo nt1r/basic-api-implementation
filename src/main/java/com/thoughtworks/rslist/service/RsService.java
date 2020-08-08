@@ -6,10 +6,12 @@ import com.thoughtworks.rslist.pgleqi.RsEvent;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -17,7 +19,6 @@ import static com.thoughtworks.rslist.util.Convertor.convertRsEvent2RsEventEntit
 import static com.thoughtworks.rslist.util.Convertor.convertRsEventEntity2RsEvent;
 import static com.thoughtworks.rslist.util.Generator.generateResponseEntity;
 
-@Service
 public class RsService {
     public static final String RS_EVENT_NOT_EXIST = "rs event not exist";
 
@@ -26,6 +27,11 @@ public class RsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @PostConstruct
+    public void init() {
+        // some init logic here
+    }
 
     /* ====== API Methods ====== */
     public ResponseEntity getOneRsEventById(int eventId) {
