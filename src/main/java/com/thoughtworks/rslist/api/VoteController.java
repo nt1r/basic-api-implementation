@@ -23,14 +23,17 @@ import static com.thoughtworks.rslist.util.Generator.generateResponseEntity;
 @RestController
 public class VoteController {
 
-    @Autowired
-    public UserRepository userRepository;
+    public final UserRepository userRepository;
 
-    @Autowired
-    public RsEventRepository rsEventRepository;
+    public final RsEventRepository rsEventRepository;
 
-    @Autowired
-    public VoteRepository voteRepository;
+    public final VoteRepository voteRepository;
+
+    public VoteController(UserRepository userRepository, RsEventRepository rsEventRepository, VoteRepository voteRepository) {
+        this.userRepository = userRepository;
+        this.rsEventRepository = rsEventRepository;
+        this.voteRepository = voteRepository;
+    }
 
     @Transactional
     @PostMapping("/rs/vote/{rsEventId}")

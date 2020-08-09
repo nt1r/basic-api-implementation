@@ -29,14 +29,14 @@ public class UserController {
     public static final String UNKNOWN_ERROR = "Unknown Error";
     public static final String USER_ID_NOT_EXIST = "userId not exist";
     // public static List<User> userList = new ArrayList<>();
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     ObjectMapper objectMapper;
 
     Logger logger = LoggerFactory.getLogger(RsController.class);
 
-    public UserController() {
+    public UserController(UserRepository userRepository) {
         objectMapper = new ObjectMapper();
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/user")

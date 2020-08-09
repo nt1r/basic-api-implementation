@@ -22,11 +22,11 @@ public class RsController {
     ObjectMapper objectMapper;
     Logger logger = LoggerFactory.getLogger(RsController.class);
 
-    @Autowired
-    private RsService rsService;
+    private final RsService rsService;
 
-    public RsController() {
+    public RsController(RsService rsService) {
         objectMapper = new ObjectMapper();
+        this.rsService = rsService;
     }
 
     @GetMapping("/rs")

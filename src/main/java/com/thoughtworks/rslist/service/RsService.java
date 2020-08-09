@@ -22,11 +22,14 @@ import static com.thoughtworks.rslist.util.Generator.generateResponseEntity;
 public class RsService {
     public static final String RS_EVENT_NOT_EXIST = "rs event not exist";
 
-    @Autowired
-    private RsEventRepository rsEventRepository;
+    private final RsEventRepository rsEventRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public RsService(RsEventRepository rsEventRepository, UserRepository userRepository) {
+        this.rsEventRepository = rsEventRepository;
+        this.userRepository = userRepository;
+    }
 
     @PostConstruct
     public void init() {
