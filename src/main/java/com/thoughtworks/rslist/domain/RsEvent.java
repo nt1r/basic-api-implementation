@@ -1,4 +1,4 @@
-package com.thoughtworks.rslist.pgleqi;
+package com.thoughtworks.rslist.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

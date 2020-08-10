@@ -1,12 +1,11 @@
 package com.thoughtworks.rslist.util;
 
-import com.thoughtworks.rslist.api.UserController;
 import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.entity.VoteEntity;
-import com.thoughtworks.rslist.pgleqi.RsEvent;
-import com.thoughtworks.rslist.pgleqi.User;
-import com.thoughtworks.rslist.pgleqi.Vote;
+import com.thoughtworks.rslist.domain.RsEvent;
+import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.domain.Vote;
 import com.thoughtworks.rslist.repository.UserRepository;
 
 import java.time.LocalDate;

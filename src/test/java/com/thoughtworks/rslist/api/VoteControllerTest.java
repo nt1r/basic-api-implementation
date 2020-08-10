@@ -1,7 +1,7 @@
 package com.thoughtworks.rslist.api;
 
-import com.thoughtworks.rslist.pgleqi.RsEvent;
-import com.thoughtworks.rslist.pgleqi.User;
+import com.thoughtworks.rslist.domain.RsEvent;
+import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;

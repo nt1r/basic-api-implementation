@@ -1,6 +1,5 @@
 package com.thoughtworks.rslist.util;
 
-import com.thoughtworks.rslist.pgleqi.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

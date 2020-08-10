@@ -1,9 +1,8 @@
 package com.thoughtworks.rslist.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoughtworks.rslist.pgleqi.RsEvent;
-import com.thoughtworks.rslist.pgleqi.User;
+import com.thoughtworks.rslist.domain.RsEvent;
+import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -283,13 +282,11 @@ class UserControllerTest {
     /* ====== */
 
     private MvcResult addOneNormalUserTest() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(post(ADD_USER_URL)
+        return mockMvc.perform(post(ADD_USER_URL)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userDwight)))
                 .andExpect(status().isCreated())
                 .andReturn();
-
-        return mvcResult;
     }
 }

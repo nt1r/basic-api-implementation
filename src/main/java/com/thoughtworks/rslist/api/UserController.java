@@ -3,21 +3,17 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.component.CommonException;
 import com.thoughtworks.rslist.entity.UserEntity;
-import com.thoughtworks.rslist.pgleqi.User;
+import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.repository.UserRepository;
-import com.thoughtworks.rslist.util.Convertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static com.thoughtworks.rslist.util.Convertor.convertUser2UserEntity;
 import static com.thoughtworks.rslist.util.Convertor.convertUserEntity2User;

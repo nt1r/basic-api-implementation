@@ -1,4 +1,4 @@
-package com.thoughtworks.rslist.pgleqi;
+package com.thoughtworks.rslist.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

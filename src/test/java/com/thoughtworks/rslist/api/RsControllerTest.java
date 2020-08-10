@@ -2,9 +2,8 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoughtworks.rslist.entity.RsEventEntity;
-import com.thoughtworks.rslist.pgleqi.RsEvent;
-import com.thoughtworks.rslist.pgleqi.User;
+import com.thoughtworks.rslist.domain.RsEvent;
+import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.time.LocalDate;
 
 import static com.thoughtworks.rslist.util.Convertor.convertRsEvent2RsEventEntity;
 import static com.thoughtworks.rslist.util.Convertor.convertUser2UserEntity;
